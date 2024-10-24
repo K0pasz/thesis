@@ -7,7 +7,7 @@ from launch.conditions import IfCondition
 
 def launch_setup(context, *args, **kwargs):
     spectacularai_node = Node(
-        package='spectacularai_depthai',
+        package='spectacularai_depthai_turtlebot',
         executable='ros2_node',
         parameters=[
             { 'recordingFolder': LaunchConfiguration("recordingFolder") },

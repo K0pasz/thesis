@@ -1,11 +1,11 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 
-package_name = 'spectacularai_depthai'
+package_name = 'spectacularai_depthai_turtlebot'
 
 setup(
     name=package_name,
     version='0.0.1',
-    packages=[package_name],
+    packages=find_packages(exclude=['test']),
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
@@ -13,14 +13,14 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='Spectacular AI',
-    maintainer_email='firstname.lastname@spectacularai.com',
-    description='Spectacular AI plugin for DepthAI',
-    license='All Rights Reserved',
+    maintainer='deblaci',
+    maintainer_email='deblaci10@gmail.com',
+    description='TODO: Package description',
+    license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'ros2_node = spectacularai_depthai.ros2_node:main'
+        'ros2_node = spectacularai_depthai_turtlebot.spectacularai_node:main',
         ],
     },
 )
