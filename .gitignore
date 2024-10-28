@@ -2,3 +2,12 @@ install/
 build/
 log/
 __pycache__
+*.ply
+*.png
+processed/
+*transforms.json
+*.db
+*.bin
+project.ini
+config.yml
+*.ckpt
