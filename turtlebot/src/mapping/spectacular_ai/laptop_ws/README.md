@@ -67,4 +67,7 @@ for a bigger model that will take more time to train but the result will be more
 
 The output should be in the `outputs/` folder.
 
-TODO: add the export command for the 3D model from the Ubuntu laptop.
+You can export the created splat into a `.ply` file with the following command:
+```
+ns-export gaussian-splat --load-config outputs/gsplat_input/splatfacto/DATE/config.yml --output-dir exports/splat/
+```
