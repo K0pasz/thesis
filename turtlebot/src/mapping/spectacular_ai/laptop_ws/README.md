@@ -71,3 +71,13 @@ You can export the created splat into a `.ply` file with the following command:
 ```
 ns-export gaussian-splat --load-config outputs/gsplat_input/splatfacto/DATE/config.yml --output-dir exports/splat/
 ```
+
+### Using `gsplat.sh`
+
+You can use `gsplat.sh` after the keyframe collection:
+
+```
+bash gsplat.sh PATH/TO/keyframes
+```
+
+This will generate the COLMAP and train the Gaussian splat model. It cannot export the `.ply` file because nerfstudio names the output models' directories dynamically with timestamps and they cannot be extracted, this function cannot be disabled.

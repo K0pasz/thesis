@@ -46,7 +46,7 @@ def main(directory, blur_threshold, brightness_threshold):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Post-process keyframe images by deleting blurry and overexposed images, and renumbering.")
-    parser.add_argument("directory", type=str, help="Directory containing the keyframe images.")
+    parser.add_argument("--directory", type=str, help="Directory containing the keyframe images.")
     parser.add_argument("--blur-threshold", type=float, default=500.0, help="Threshold for detecting blurry images.")
     parser.add_argument("--brightness-threshold", type=float, default=200.0, help="Threshold for detecting overexposed images.")
     args = parser.parse_args()
