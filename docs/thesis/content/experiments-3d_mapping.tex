@@ -54,12 +54,6 @@ The holes in the floor are visible because the dark brown laminate reflected the
 
 \section{Nvblox}
 
-NVIDIA’s nvblox is a GPU-accelerated spatial mapping library designed to work seamlessly with ROS2 and other robotics frameworks for real-time 3D environment reconstruction. Leveraging NVIDIA’s CUDA technology, nvblox processes data from depth sensors and LIDAR in real time, enabling robots to build and update dense 3D maps of their surroundings with low latency. Its main use cases include robotics applications requiring immediate spatial awareness, such as autonomous navigation, manipulation, and exploration in dynamically changing environments.
-
-One of the key advantages of nvblox is its ability to generate high-resolution voxel grids and mesh representations at impressive speeds, a performance largely unattainable with CPU-only mapping solutions. nvblox achieves this by maintaining and updating a voxel grid map where each voxel represents a small cube in the 3D environment, storing spatial information like occupancy and color. It also incorporates functionality to convert voxel maps into triangular meshes, which can then be visualized or further processed. With its ROS2 compatibility, nvblox can work as a ROS node, allowing direct integration with popular robotic systems and sensor data sources like RGB-D cameras, stereo cameras, and LIDAR, making it a practical solution for ROS-based projects.
-
-Another significant feature of nvblox is its flexibility to run on various NVIDIA platforms, including Jetson devices, which are popular in edge computing and mobile robotics. This makes nvblox ideal for field applications where high-performance spatial understanding is critical. By reducing the computational load traditionally associated with real-time 3D mapping and enhancing efficiency, nvblox enables the creation of robust, high-fidelity maps that allow robots to react to and understand their environments effectively.
-
 To begin using nvblox, I installed its dependencies and started the provided Docker container. However, when attempting to run the example code, I encountered frequent crashes. This was due to nvblox’s requirement for a minimum of 8 GB of VRAM, while my notebook, equipped with a GTX 1660 Ti GPU, only has 6 GB. Occasionally, the example did run successfully, as shown in Figure~\ref{fig:nvblox_example}. In this figure, you can observe how nvblox generates a voxel map by combining data from color and depth images along with LIDAR inputs, producing a comprehensive spatial map.
 
 \begin{figure}[htbp]

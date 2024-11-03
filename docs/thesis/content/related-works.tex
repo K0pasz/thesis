@@ -42,7 +42,7 @@ as a NAS (Network-Attached Storage),
 as a media server,
 in complex embedded systems,
 in mobile robots, just to name only a few examples.
-The RPi4 is equipped with a quad core ARM v8 Cortex-A72\footnote{\url{https://www.arm.com/products/silicon-ip-cpu/cortex-a/cortex-a72}} 64-bit SoC, Gigabit ethernet, 2 micro-HDMI ports which support resolution up to 4K, an USB-C power input and 2, 4 or 8 GB of RAM (it can be chosen by our needs or budget). In the Turtlebot4 the Raspberry Pi is used to run ROS2.
+The Raspberry Pi 4 is equipped with a quad core ARM v8 Cortex-A72\footnote{\url{https://www.arm.com/products/silicon-ip-cpu/cortex-a/cortex-a72}} 64-bit SoC, Gigabit ethernet, 2 micro-HDMI ports which support resolution up to 4K, an USB-C power input and 2, 4 or 8 GB of RAM (it can be chosen by our needs or budget). In the Turtlebot4 the Raspberry Pi is used to run ROS2.
 
 
 %\subsection{RPLIDAR-A1}
@@ -50,7 +50,7 @@ The Turtlebot4 is equipped with an RPLIDAR-A1\footnote{\url{https://www.slamtec.
 The sensor is plug-and-play, it has a USB interface, open-source SDK and ROS2 integration. It goes without saying, but it is worth noting that it meets the Class 1 laser safety standard and is completely safe for human eyes~\cite{LaserSafety}.
 
 %\subsection{OAK-D Pro}
-The Turtlebot 4 Standard also comes with an OAK-D Pro stereo camera as seen on Figure~\ref{fig:oak_d_pro_nokia}. OAK\footnote{\url{https://shop.luxonis.com/collections/oak-cameras-1}} is a robotic vision camera series made by Luxonis\footnote{\url{https://www.luxonis.com/}}. Additionally, I got another OAK-D model from Nokia to test my implementations at home during the semester.
+The Turtlebot 4 Standard also comes with an OAK-D Pro stereo camera as seen on Figure~\ref{fig:oak_d_pro_nokia}. OAK\footnote{\url{https://shop.luxonis.com/collections/oak-cameras-1}} is a robotic vision camera series made by Luxonis\footnote{\url{https://www.luxonis.com/}}. Additionally, I got another OAK-D model from Nokia to test my implementations at home during the writing of my thesis.
 
 The specifications of the OAK-D:
 \begin{table}[h!]
@@ -135,7 +135,7 @@ One of the primary advantages of Gaussian splatting lies in its ability to faith
 
 Recent advancements in the field, particularly in the realm of Neural Radiance Fields~\cite{nerf} (NeRFs), have propelled the development of photorealistic reconstruction techniques to new heights. NeRFs, which are neural network-based models capable of synthesizing novel views of a scene from a sparse set of input images, have demonstrated remarkable success in generating high-fidelity renderings. By using NeRFs, researchers have been able to achieve even more impressive results, enabling the generation of photorealistic renderings with enhanced efficiency and accuracy.
 
-Gaussian splatting and NeRFs opens up exciting possibilities for various applications, including virtual reality, augmented reality, computer graphics, and beyond. As research in this area continues to evolve, we can expect further innovations that push the boundaries of what is possible in three-dimensional scene reconstruction and rendering.
+Gaussian splatting and NeRFs open up exciting possibilities for various applications, including virtual reality, augmented reality, computer graphics, and beyond. As research in this area continues to evolve, we can expect further innovations that push the boundaries of what is possible in three-dimensional scene reconstruction and rendering.
 
 Our optional goal was to create photorealistic 3D models of the robot's environment from the images taken when mapping. This could be achieved with the help of Gaussian splatting. The result could be an environment's 3D model where we can place the robot's 3D model too and visualize its position real-time while it runs in localization mode using the discovered map.
 
@@ -149,9 +149,18 @@ One of the key features of RTAB-Map is its ability to handle large-scale environ
 
 RTAB-Map is highly versatile and supports various sensor configurations, including RGB-D cameras, stereo cameras, and LIDAR sensors. This flexibility makes it suitable for a wide range of applications, from indoor navigation to outdoor exploration. Moreover, RTAB-Map is integrated with ROS, providing a comprehensive suite of tools for robotic development and deployment.
 
+\section{NVIDIA's nvblox}
+
+NVIDIA’s nvblox~\cite{nvblox_docs} is a GPU-accelerated spatial mapping library designed to work seamlessly with ROS2 and other robotics frameworks for real-time 3D environment reconstruction. Leveraging NVIDIA’s CUDA technology, nvblox processes data from depth sensors and LIDAR in real time, enabling robots to build and update dense 3D maps of their surroundings with low latency. Its main use cases include robotics applications requiring immediate spatial awareness, such as autonomous navigation, manipulation, and exploration in dynamically changing environments.
+
+One of the key advantages of nvblox is its ability to generate high-resolution voxel grids and mesh representations at impressive speeds, a performance largely unattainable with CPU-only mapping solutions. nvblox achieves this by maintaining and updating a voxel grid map where each voxel represents a small cube in the 3D environment, storing spatial information like occupancy and color. It also incorporates functionality to convert voxel maps into triangular meshes, which can then be visualized or further processed. With its ROS2 compatibility, nvblox can work as a ROS node, allowing direct integration with popular robotic systems and sensor data sources like RGB-D cameras, stereo cameras, and LIDAR, making it a practical solution for ROS-based projects.
+
+Another significant feature of nvblox is its flexibility to run on various NVIDIA platforms, including Jetson devices, which are popular in edge computing and mobile robotics. This makes nvblox ideal for field applications where high-performance spatial understanding is critical. By reducing the computational load traditionally associated with real-time 3D mapping and enhancing efficiency, nvblox enables the creation of robust, high-fidelity maps that allow robots to react to and understand their environments effectively.
+
+
 % Do we even need this section?
-\section{Localization}
+% \section{Localization}
 
-After creating a detailed map, it becomes essential to explore various approaches for photorealistic localization. Photorealistic localization involves using high-fidelity 3D reconstructions of the environment to accurately determine the robot's position and orientation. This can be particularly beneficial for tasks requiring high precision, such as navigation in complex or dynamic environments.
+% After creating a detailed map, it becomes essential to explore various approaches for photorealistic localization. Photorealistic localization involves using high-fidelity 3D reconstructions of the environment to accurately determine the robot's position and orientation. This can be particularly beneficial for tasks requiring high precision, such as navigation in complex or dynamic environments.
 
-One promising approach is to train Neural Radiance Fields (NeRFs) or create Gaussian Splats from the mapped environment. NeRFs leverage neural networks to synthesize novel views of a scene based on a sparse set of input images, providing a continuous 3D representation. Gaussian Splats, on the other hand, use point-based rendering techniques to represent the scene with a collection of Gaussian functions, enabling efficient and scalable visualization.
+% One promising approach is to train Neural Radiance Fields (NeRFs) or create Gaussian Splats from the mapped environment. NeRFs leverage neural networks to synthesize novel views of a scene based on a sparse set of input images, providing a continuous 3D representation. Gaussian Splats, on the other hand, use point-based rendering techniques to represent the scene with a collection of Gaussian functions, enabling efficient and scalable visualization.
