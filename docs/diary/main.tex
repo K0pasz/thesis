@@ -23,36 +23,211 @@
 \maketitle
 
 \tableofcontents
+
 \newpage
 
-\section{Nice tools}
+\section{Oct 22 -- Oct 29}
+\subsection{Tasks}
 \begin{itemize}
-    \item Online ply viewer which works with big files: \url{https://point.love/}
-    \item Online GSplat viewer (drag and drop a .ply file): \url{https://antimatter15.com/splat/}
-    \item SuperSplat: \url{https://playcanvas.com/supersplat/editor}
+    \item Create a node that can save required data from the SPAI node to create GSplats/train NeRFs. \todo[color=green!30]{DONE}
+    \item Continue writing the thesis \todo[color=blue!30]{IN PROGRESS}
 \end{itemize}
+
+\subsection{Achievements}
+\begin{itemize}
+    \item I have created a new package under the laptop's workspace. It contains a node which subscribes onto the \verb|/slam/keyframe| and \verb|/slam/left| topics. The node saves the latest image from the latter topic for it can be a potential keyframe. Messages are sent to the \verb|/slam/keyframe| topic only when the camera sees a new keyframe, so when this happens, the node saves the latest image into a \verb|.png| file because it is a keyframe.
+    \item The node does not do anything else because I wanted it to be as fast as possible. After the images are saved there could be blurry or overexposed ones among them so we have to remove them and renumber the images in the folder. The \verb|post_process_images.py| script does that: the blurriness can be measured by the Laplacian of the image (the higher the value, the more sharp the image is) and the exposure by the mean brightness of the image (higher value means more brightness). If the Laplacian is lesser than the given threshold (500 by default because it worked fine) or the exposure is greater than the given threshold (200 by default because it worked fine) then the image is deleted. After the deletions of the images the remaining ones are renumbered sequentially in the folder.
+    \item We have to generate a COLMAP from these pictures in order to create a Gaussian Splat or train a NeRF. We can do it with nerfstudio with the following command: ns-process-data images --data PATH/TO/keyframes --output-dir PATH/TO/OUTPUT. It may take a few minutes to run if we have a lot of saved keyframes.
+    \item With the generated COLMAP we are finally able to create our Gaussian Splat. It can be done by the nerfstudio's ns-train splatfacto --data gsplat\_input/ or by the ns-train splatfacto-big --data gsplat\_input command. I used the big one because it can create more precise splats. Then we can run the following to export our splat into a \verb|.ply| file: ns-export gaussian-splat --load-config outputs/gsplat\_input/splatfacto/DATE/config.yml --output-dir exports/splat/.
+    \item Fortunately nerfstudio has been updated and I could create my own splats with 6 GB of VRAM now, a while ago it was not possible.
+    \item Unfortunately we can only save monochrome pictures because the SPAI camera pipeline does not open the RGB camera and we cannot open it from outside the pipeline because it is "locked".
+    \item Created splat:\par
+    \begin{minipage}{\linewidth}
+        \centering
+        \includegraphics[width=1\linewidth]{images/spai_gsplat1.png}
+        \captionof{figure}{Created GSplat}
+    \end{minipage}
+    \begin{minipage}{\linewidth}
+        \centering
+        \includegraphics[width=1\linewidth]{images/spai_gsplat2.png}
+        \captionof{figure}{Created GSplat}
+    \end{minipage}
+    \begin{minipage}{\linewidth}
+        \centering
+        \includegraphics[width=1\linewidth]{images/spai_gsplat3.png}
+        \captionof{figure}{Created GSplat}
+    \end{minipage}
+    
+\end{itemize}
+
+\newpage
+
+\section{Oct 15 -- Oct 22}
+\subsection{Tasks}
+\begin{itemize}
+    \item Make the SPAI node work. \todo[color=green!30]{DONE}
+    \item Separate the SPAI node into 2 ROS2 workspaces: one for the Turtlebot4 and one for the laptop.
+\end{itemize}
+
+\subsection{Achievements}
+\begin{itemize}
+    \item I have been on holiday between Oct 14 -- Oct 18.
+    \item The SPAI node works. Some weeks ago we tried to use it with an old SDK version that Gabor got from the SPAI Team but it was not compatible with our code so we removed some segments from it. One segment was the registration of our callback function from the camera pipeline. I put it back and now it works well, the position, orientation and pointcloud from VIO is published well.
+    \item I have separated the code into 2 workspaces. The mapping and the visualization now has different ROS2 workspaces so we do not have to build every package on the Turtlebot or on the laptop.
+\end{itemize}
+
+\newpage
+
+\section{Oct 8 -- Oct 15}
+\subsection{Tasks}
+\begin{itemize}
+    \item Make the SPAI node work. \todo[color=green!30]{DONE}
+\end{itemize}
+
+\subsection{Achievements}
+\begin{itemize}
+    \item The node did not work because the callback functions did not get called. I have asked the SPAI team but they have not answered yet.
+\end{itemize}
+
+\newpage
+
+\section{Sep 24 -- Oct 8}
+\subsection{Tasks}
+\begin{itemize}
+    \item Improve the spectacularAI mapping launch scripts. \todo[color=green!30]{DONE}
+    \item Make the thesis work on my new Zenbook \todo[color=green!30]{DONE}
+\end{itemize}
+
+\subsection{Achievements}
+\begin{itemize}
+    \item I have improved the mapping launch script which runs on the Turtlebot. Now we can do the following:
+    \begin{itemize}
+        \item Do SLAM
+        \item Record the movement for GSPlat/NeRF training
+        \item Do SLAM and record simultaneously
+    \end{itemize}
+    \item Unfortunately my Zenbook cannot boot from the external HDD which has Ubuntu and every dependency installed. I tried WSL but the camera could not be used because the camera appears as different USB devices during startup and the actual functioning. Due to this I could not bind it correctly to WSL. The solution was VirtualBox with a fully functioning Ubuntu installed on it, my custom launch scripts successfully started on it.
+\end{itemize}
+
+\newpage
+
+\section{Sep 17 -- Sep 24}
+
+\subsection{Tasks}
+\begin{itemize}
+    \item Ask Spectacular AI team if they are willing to send us their SDK for \verb|aarch64| architecture for my thesis (it is commercial). \todo[color=green!30]{DONE}
+    \item Try out \verb|nvblox|. \todo[color=green!30]{DONE}
+    \item Try out \verb|isaac-vslam|. \todo[color=green!30]{DONE}
+    \item Try out \url{https://github.com/msardonini/oakd_isaac_ros/tree/main?tab=readme-ov-file} \todo[color=green!30]{DONE}
+\end{itemize}
+
+\subsection{Achievements}
+\begin{itemize}
+    \item Spectacular AI has sent me their SDK for \verb|aarch64| architecture. This is a commercial version but I was able to negotiate with them using my university student status and thesis writing. The next time we meet at Nokia we should be able to try it out.
+    \item I have tried out \verb|nvblox|, sometimes the example works well but most of the time it crashes. This is due to the requirement of 8 GB VRAM, my laptop only has 6 (it has a GTX1660 Ti). My PC has an RTX 3070 Ti with 8 GB VRAM so it should be enough but I was not able to boot it up from the external HDD. I tried every setup option related to booting and USB but it did not work. The PC sees the HDD as a bootable device but when I try to boot from it only a text appears that says it did not find any bootable media, I should insert one and try again. I even tried all the USB ports on the computer but none of them worked. Nvblox when it started:\par
+    \begin{minipage}{\linewidth}
+        \centering
+        \includegraphics[width=1\linewidth]{images/nvblox.png}
+        \captionof{figure}{nvblox example}
+    \end{minipage}
+    \item I have tried out the \verb|nvidia isaac vslam| example:\par
+    \begin{minipage}{\linewidth}
+        \centering
+        \includegraphics[width=1\linewidth]{images/isaac_vslam_example.png}
+        \captionof{figure}{isaac vslam example}
+    \end{minipage}
+    \item I experimented with \verb|isaac vslam| using Nvidia's \verb|isaac sim| omniverse tool. It did not work well because the simulator needs an RTX GPU with at least 8 GB VRAM. I tried this example: \url{https://nvidia-isaac-ros.github.io/concepts/visual_slam/cuvslam/tutorial_isaac_sim.html} hoping that the simulator could work with my graphics card (GTX1660 Ti) but nothing appeared in RViz so my GPU is not compatible with this simulator.
+    \item I experimented with \url{https://github.com/msardonini/oakd_isaac_ros/tree/main?tab=readme-ov-file}. It could not build the Docker image because there are attribute errors. I tried to build it with newer versions of isaac ros but they were not compatible with each other.
+\end{itemize}
+
+\section{Sep 10 -- Sep 17}
+\subsection{Ideas with SpectacularAI}
+High priority: SpectacularAI VIO and VPS combination on the Turtlebot4.
+\begin{itemize}
+\item get SpectacularAI with OAKD working again. Combine SPAI VIO with Peter's VPS client node and collect local+global pose pairs. Calculate alignment transform between local map and global map.
+\item the goal is that we can start the robot anywhere on the floor, it will track its own local motion using SPAI, and via VPS we can localize in the building coordinate system, and align the local coordinate system to the global coordinate system
+\end{itemize}
+
+\subsection{Ideas to work with ORB-SLAM:}
+\begin{itemize}
+    
+\item generate lidarmap based on OS2 map, like in this project:
+\item \url{https://github.com/abhineet123/ORB_SLAM2/blob/master/2d-grid-mapping.pdf}
+\item \url{https://github.com/abhineet123/ORB_SLAM2/blob/master/Examples/ROS/ORB_SLAM2/src/ros_mono_sub.cc}
+\item \url{https://github.com/abhineet123/ORB_SLAM2/blob/master/pointCloudToGridMap2D.py}
+
+\item Can we do the same not from OS2map, but from a Colmap model? As you know, I can export OS3 map and our own SLAM's map into Colmap format, which has all the necessary information. Then we could use an RGBD camera to map the space, create a 3D reconstruction with any method, export it to Colmap format, and then turn that into a navigable 2D lidarmap. That would be cool.
+
+\item ExplORBSLAM \url{https://github.com/JulioPlaced/ExplORB-SLAM} (Laci: this works on ROS1)
+
+\item Laci: I think we may be able to create a 2D lidar map from the Colmap because it contains the recorded point cloud. We just have to delete the points that represent the ceiling, ignore the points that represent the ground and represent the obstacled detected by the lidar from those points that are in the robot's way. This could work.
+
+\end{itemize}
+
+\subsection{Ideas to work with RTAB-Map}
+\begin{itemize}
+\item \url{https://introlab.github.io/rtabmap/}
+\item RTAB-Map navigation for TB3. Let's rewrite this for TB4! \url{
+https://github.com/introlab/rtabmap_ros/blob/master/rtabmap_demos/launch/demo_turtlebot3_navigation.launch} (Laci: there is a slam example on the \verb|ros2| branch for Turtlebot4: \url{https://github.com/introlab/rtabmap_ros/blob/ros2/rtabmap_demos/launch/turtlebot4_slam.launch.py}). Edit Laci: I tried it out but it froze everytime, sometimes the robot could not even undock in Gazebo and if it did, I tried to teleop it but it froze after some seconds. I tried with the mentioned explorer but it just waits for a costmap which is not present. Even RViz did not work well, when I sent a goal the robot just stood in one place.
+
+\item \url{https://sudonull.com/post/18423-Localization-and-navigation-in-ROS-using-rtabmap} (Laci: this is for ROS1)
+
+\item RTAB-Map drone navigation \url{https://github.com/matlabbe/rtabmap_drone_example}. It seems they only do 2D planning. How do they genreate the costmap from the RTABMAP? Think about how we could do 3D (also up-down) planning. (Laci: the costmap is generated here \url{https://github.com/matlabbe/rtabmap_drone_example/blob/3055aea3a69da6c8acc0177c4c9c386578df38d5/launch/slam.launch#L39C5-L48C13} and some layer plugins are used as well \url{https://github.com/matlabbe/rtabmap_drone_example/blob/3055aea3a69da6c8acc0177c4c9c386578df38d5/param/local_costmap_params.yaml#L18C3-L20C65}. I went through the whole repo but could not find anything else.)
+
+\item object detection (2D to 3D) demo: \url{https://github.com/introlab/rtabmap_ros/blob/master/rtabmap_demos/launch/demo_find_object.launch}
+\item WiFi signal strength visualization demo: \url{https://github.com/introlab/rtabmap_ros/blob/master/rtabmap_demos/src/WifiSignalSubNode.cpp} and \url{https://github.com/introlab/rtabmap_ros/blob/master/rtabmap_demos/scripts/wifi_signal_pub.py}
+\item multi-session mapping (as described on their main page at June 2022): \url{https://github.com/introlab/rtabmap/tree/master/archive/2022-IlluminationInvariant}
+\end{itemize}
+
+
+\subsection{Ideas to  work with nvblox}
+Test the requirements and decied whether feasible on the TB4
+\begin{itemize}
+    \item nvblox supports RealSense cameras (there is one on the Turtlebot4)
+    \item \url{https://forums.developer.nvidia.com/t/nvblox-nav2-implementation/272598/2}
+    \item \url{https://forums.developer.nvidia.com/t/how-to-use-nvblox-with-luxonis-oak-d-pro-poe/282877}
+\end{itemize}
+
+
+\newpage
+
+\section{Sep 3 -- Sep 10}
+\begin{itemize}
+\item new literature review (Gabor put into GDrive) \todo[color=green!30]{DONE}
+\item review last semester's code and make sure it all works. \todo[color=green!30]{DONE}
+\end{itemize}
+
+\subsection{Achievements}
+\begin{itemize}
+    \item The code I wrote last semester to detect persons and publish their positions to a ROS2 topic still works. On the other hand it still has the bug in the DepthAI SDK: after successful detections a few seconds later the camera freezes telling that the IMU buffer size is exceeded. It happens with the default DepthAI script too, they have not fixed it...
+\end{itemize}
+
+------------------------------------------------
+
+
+
 
 \section{May 28 -- June 4}
 \begin{itemize}
-\item presentation
+\item presentation \todo[color=green!30]{DONE}
 \end{itemize}
 
 \section{May 21 -- May 28}
 \begin{itemize}
-\item report writing, finalization
+\item report writing, finalization \todo[color=green!30]{DONE}
 \end{itemize}
 
 \section{May 14 -- May 21}
 \begin{itemize}
-\item testing 3D person detection on Turtlebot4
-\item report writing
+\item testing 3D person detection on Turtlebot4 \todo[color=green!30]{DONE}
+\item report writing \todo[color=green!30]{DONE}
 \end{itemize}
 
 
 \section{May 07 -- May 14}
 \begin{itemize}
-\item testing SPAI pose estimation on Turtlebot4
-\item testing 3D person detection on Turtlebot4
+\item testing SPAI pose estimation on Turtlebot4 \todo[color=green!30]{DONE}
+\item testing 3D person detection on Turtlebot4 \todo[color=green!30]{DONE}
 \end{itemize}
 \newpage
 
@@ -60,10 +235,10 @@
 \subsection{Reading}
 Some links on neural 3D maps:
 \begin{itemize}
-\item NerfNavigation: Vision-Only Robot Navigation in a Neural Radiance World, \url{https://mikh3x4.github.io/nerf-navigation/}
-\item Motion Planning with Implicit Neural Representations of Geometry, \url{https://neural-implicit-workshop.stanford.edu/}
-\item Splat-Nav: Safe Real-Time Robot Navigation in Gaussian Splatting Maps, \url{https://arxiv.org/abs/2403.02751}
-\item SplaTAM: Splat, Track \& Map 3D Gaussians for Dense RGB-D SLAM\url{https://spla-tam.github.io/}
+\item NerfNavigation: Vision-Only Robot Navigation in a Neural Radiance World, \url{https://mikh3x4.github.io/nerf-navigation/} \todo[color=green!30]{DONE}
+\item Motion Planning with Implicit Neural Representations of Geometry, \url{https://neural-implicit-workshop.stanford.edu/} \todo[color=green!30]{DONE}
+\item Splat-Nav: Safe Real-Time Robot Navigation in Gaussian Splatting Maps, \url{https://arxiv.org/abs/2403.02751} \todo[color=green!30]{DONE}
+\item SplaTAM: Splat, Track \& Map 3D Gaussians for Dense RGB-D SLAM\url{https://spla-tam.github.io/} \todo[color=green!30]{DONE}
 \item \url{https://github.com/zubair-irshad/Awesome-Implicit-NeRF-Robotics?tab=readme-ov-file#planningnavigation}
 \end{itemize}
 \newpage
@@ -75,17 +250,17 @@ Literature search about 3D map representations for robot/drone navigation: point
 
 Some links on traditional 3D maps:
 \begin{itemize}
-\item Octomap: \url{https://octomap.github.io/}
-\item Voxblox: Oleynikova - Voxblox: Incremental 3D Euclidean Signed Distance Fields for On-Board MAV Planning, 
-\item VoxboxPlanning: \url{https://github.com/ethz-asl/mav_voxblox_planning}
-\item nvBlox \url{https://nvblox.readthedocs.io/en/latest/} -- top priority
-\item MeshNavigation \url{https://github.com/naturerobots/mesh_navigation}
-\item RTAB-Map: \url{https://introlab.github.io/rtabmap/}
-\item maplab, maplab 2.0 \url{https://maplab.asl.ethz.ch/docs/master/index.html}
-\item FUEL: Boyu Zhou, Yichen Zhang, Xinyi Chen, and Shaojie Shen. Fuel: Fast
+\item Octomap: \url{https://octomap.github.io/} \todo[color=green!30]{DONE}
+\item Voxblox: Oleynikova - Voxblox: Incremental 3D Euclidean Signed Distance Fields for On-Board MAV Planning \url{https://helenol.github.io/publications/iros_2017_voxblox.pdf} \todo[color=green!30]{DONE}
+\item VoxboxPlanning: \url{https://github.com/ethz-asl/mav_voxblox_planning} \todo[color=green!30]{DONE}
+\item nvBlox \url{https://nvblox.readthedocs.io/en/latest/} -- top priority \todo[color=green!30]{DONE}
+\item MeshNavigation \url{https://github.com/naturerobots/mesh_navigation} \todo[color=green!30]{DONE}
+\item RTAB-Map: \url{https://introlab.github.io/rtabmap/} \todo[color=green!30]{DONE}
+\item maplab, maplab 2.0 \url{https://maplab.asl.ethz.ch/docs/master/index.html} \todo[color=green!30]{DONE}
+\item FUEL: Boyu Zhou, Yichen Zhang, Xinyi Chen, and Shaojie Shen. Fuel: Fast \todo[color=green!30]{DONE}
 uav exploration using incremental frontier structure and hierarchical
 planning. IEEE Robotics and Automation Letters, 6(2):779–786, 2021.
-\item [2024] Zeng - Autonomous Implicit Indoor Scene Reconstruction with Frontier Exploration (arxiv)
+\item [2024] Zeng - Autonomous Implicit Indoor Scene Reconstruction with Frontier Exploration (arxiv) \todo[color=green!30]{DONE}
 \end{itemize}
 \newpage
 
@@ -97,7 +272,6 @@ planning. IEEE Robotics and Automation Letters, 6(2):779–786, 2021.
 \item try DepthAI RTAB-Map ROS \url{https://github.com/luxonis/depthai-ros/blob/humble/depthai_ros_driver/launch/rtabmap.launch.py} \todo[color=green!30]{DONE}
 \item Optional: try RTAB-MAP iOS \url{https://apps.apple.com/ca/app/rtab-map-3d-lidar-scanner/id1564774365} \todo[color=green!30]{DONE}
 \item try to load and continue a SPAI map \todo[color=blue!30]{IN PROGRESS}
-\item Laci: try out this \url{https://docs.luxonis.com/en/latest/pages/slam_oak/}
 \end{itemize}
 
 \subsection{Achievements}
@@ -457,6 +631,16 @@ example citation \cite{Macenski2021}
     \item Unfortunately I could not drive the simulated robot with the \verb|teleop_twist_keyboard| node
     
 \end{itemize}
+
+\newpage
+
+\section{Nice tools}
+\begin{itemize}
+    \item Online ply viewer which works with big files: \url{https://point.love/}
+    \item Online GSplat viewer (drag and drop a .ply file): \url{https://antimatter15.com/splat/}
+    \item SuperSplat: \url{https://playcanvas.com/supersplat/editor}
+\end{itemize}
+
 
 \newpage
 

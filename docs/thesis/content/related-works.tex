@@ -1,4 +1,4 @@
-\chapter{Related works} \label{related_works}
+\chapter{Applied technologies} \label{related_works}
 
 \section{Robot Operating System}
 
@@ -105,18 +105,19 @@ Active stereo cameras project an infrared light pattern into the scene, so they 
     \label{fig:mobile_robot_architecture}
 \end{figure}
 
-
-
-\section{Spectacular AI}
+\FloatBarrier
+\section{Spectacular AI SDK}
 
 Spectacular AI\footnote{\url{https://www.spectacularai.com/}} is a Finnish company specialized on spatial visual-inertial motion tracking and 3D mapping. They provide an SDK\footnote{\url{https://github.com/SpectacularAI/sdk}} that can be used for various applications:
 % Ensure no floats before the list
 \FloatBarrier
 \begin{itemize}
 \setlength\itemsep{0em}
-    \item camera image visualization,
-    \item IMU localization visualization,
+    \item pose tracking using camera and IMU fusion,
+    %\item camera image visualization,
+    %\item IMU localization visualization,
     \item point cloud mapping,
+    \item 3D visualization of the agent trajectory
     \item AR mapping with meshes or point clouds,
     \item mapping with ROS2 visualization.
 \end{itemize}
@@ -128,13 +129,13 @@ Spectacular AI's SDK serves as a catalyst for innovation in computer vision appl
 
 \section{Neural reconstruction}
 
-Gaussian splatting~\cite{3DGS} is a rendering technique that offers a unique approach to representing and visualizing three-dimensional scenes. Instead of relying on traditional surface or line primitives to render objects, Gaussian splatting employs "splats," which are essentially two-dimensional discs with Gaussian distribution characteristics. These splats are strategically placed within the scene based on key points extracted from images. By overlapping these splats, the technique reconstructs the underlying geometry and appearance of the scene.
+One of the various methods for neural reconstruction is Gaussian splatting~\cite{3DGS}. It is a rendering technique that offers a unique approach to representing and visualizing three-dimensional scenes. Instead of relying on traditional surface or line primitives to render objects, Gaussian splatting employs "splats", which are essentially two-dimensional discs with Gaussian distribution characteristics. These splats are strategically placed within the scene based on key points extracted from images. By overlapping these splats, the technique reconstructs the underlying geometry and appearance of the scene.
 
 One of the primary advantages of Gaussian splatting lies in its ability to faithfully capture the intricacies of complex scenes without requiring an explicit representation of geometry. This makes it particularly useful in scenarios where the scene's geometry is challenging to model or where the available data is sparse or noisy. By leveraging the information from multiple viewpoints, Gaussian splatting can generate detailed and coherent renderings, even from limited input data.
 
-Recent advancements in the field, particularly in the realm of Neural Radiance Fields\cite{nerf} (NeRFs), have propelled the development of Gaussian splatting techniques to new heights. NeRFs, which are neural network-based models capable of synthesizing novel views of a scene from a sparse set of input images, have demonstrated remarkable success in generating high-fidelity renderings. By integrating Gaussian splatting with NeRFs, researchers have been able to achieve even more impressive results, enabling the generation of photorealistic renderings with enhanced efficiency and accuracy.
+Recent advancements in the field, particularly in the realm of Neural Radiance Fields~\cite{nerf} (NeRFs), have propelled the development of photorealistic reconstruction techniques to new heights. NeRFs, which are neural network-based models capable of synthesizing novel views of a scene from a sparse set of input images, have demonstrated remarkable success in generating high-fidelity renderings. By using NeRFs, researchers have been able to achieve even more impressive results, enabling the generation of photorealistic renderings with enhanced efficiency and accuracy.
 
-The synergy between Gaussian splatting and NeRFs opens up exciting possibilities for various applications, including virtual reality, augmented reality, computer graphics, and beyond. As research in this area continues to evolve, we can expect further innovations that push the boundaries of what is possible in three-dimensional scene reconstruction and rendering.
+Gaussian splatting and NeRFs opens up exciting possibilities for various applications, including virtual reality, augmented reality, computer graphics, and beyond. As research in this area continues to evolve, we can expect further innovations that push the boundaries of what is possible in three-dimensional scene reconstruction and rendering.
 
 Our optional goal was to create photorealistic 3D models of the robot's environment from the images taken when mapping. This could be achieved with the help of Gaussian splatting. The result could be an environment's 3D model where we can place the robot's 3D model too and visualize its position real-time while it runs in localization mode using the discovered map.
 
@@ -148,23 +149,9 @@ One of the key features of RTAB-Map is its ability to handle large-scale environ
 
 RTAB-Map is highly versatile and supports various sensor configurations, including RGB-D cameras, stereo cameras, and LIDAR sensors. This flexibility makes it suitable for a wide range of applications, from indoor navigation to outdoor exploration. Moreover, RTAB-Map is integrated with ROS, providing a comprehensive suite of tools for robotic development and deployment.
 
-In this thesis, we explore the use of RTAB-Map for real-time mapping with the OAK-D camera on a Turtlebot4 robot. Our experiments aim to evaluate its performance in various conditions, such as different lighting environments and movement speeds. The insights gained from these experiments contribute to understanding the practical limitations and potential improvements for RTAB-Map in real-world applications.
-
+% Do we even need this section?
 \section{Localization}
 
 After creating a detailed map, it becomes essential to explore various approaches for photorealistic localization. Photorealistic localization involves using high-fidelity 3D reconstructions of the environment to accurately determine the robot's position and orientation. This can be particularly beneficial for tasks requiring high precision, such as navigation in complex or dynamic environments.
 
 One promising approach is to train Neural Radiance Fields (NeRFs) or create Gaussian Splats from the mapped environment. NeRFs leverage neural networks to synthesize novel views of a scene based on a sparse set of input images, providing a continuous 3D representation. Gaussian Splats, on the other hand, use point-based rendering techniques to represent the scene with a collection of Gaussian functions, enabling efficient and scalable visualization.
-
-Once these models are generated, various tools can be utilized to navigate the robot within these photorealistic maps. Some of the tools that could be explored include:
-\begin{itemize}
-\setlength\itemsep{0em}
-    \item NerfNavigation\footnote{\url{https://mikh3x4.github.io/nerf-navigation/}}
-    \item SplatNav\cite{splatnav}
-    \item SplaTAM\cite{splatam}
-    \item And a lot more...\cite{nerf_robotics_cites}
-\end{itemize}
-
-Exploring these tools involves not only testing their capabilities in a controlled environment but also evaluating their performance in real-world scenarios. This includes assessing their accuracy, computational efficiency, and robustness to changes in the environment. By leveraging these advanced localization techniques, we aim to enhance the robot's ability to navigate and interact with its surroundings with high precision and reliability.
-
-Furthermore, integrating these photorealistic localization methods with existing robotic frameworks, such as ROS2, can provide a seamless and versatile solution for various applications, from indoor navigation to outdoor exploration. The insights gained from these experiments will contribute to the development of more advanced and reliable robotic systems capable of operating in diverse and challenging environments.

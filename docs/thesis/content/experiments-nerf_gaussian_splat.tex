@@ -1,10 +1,12 @@
-\chapter{Experiments with neural reconstruction} \label{nerf_gsplat}
+\chapter{Experiments in neural reconstruction} \label{nerf_gsplat}
 
 \section{Overview}
 
 %We explored advanced techniques for generating photorealistic 3D models of the robot's environment. This involved leveraging Neural Radiance Fields (NeRFs) and Gaussian Splatting to create realistic simulations of the robot's surroundings. These techniques were evaluated using various tools, including Nerfstudio, Gaussian Splatting and Luma AI, to determine their feasibility and performance in generating accurate 3D reconstructions.
 
 An additional objective we pursued was to generate 3D photorealistic models of the robot's environment, leveraging images captured during the mapping process. Upon completion of mapping, our aim was to seamlessly integrate the robot's 3D model into this reconstructed scene. This integration would enable real-time simulation of the robot's movements during localization, transcending beyond a mere representation with a point cloud to deliver a highly realistic simulation experience.
+
+\GS{I think the relwork NeRF and 3DGS sections can be moved here.}
 
 \section{Using Spectacular AI to create input for NeRFs}
 
@@ -14,11 +16,11 @@ Continuing my exploration, I delved into the realm of 3D reconstruction using Ne
 $ python3 mapping_visu.py --recordingFolder /PATH/TO/FOLDER
 \end{lstlisting}
 
-We have made significant progress, now possessing videos and a point cloud. However, these resources alone don't suffice as input for NeRFs, which demand a more specific format. NeRFs require not only the images captured at keyframes but also a COLMAP, which contains essential information about the camera setup.
+We have made significant progress, now possessing videos and a point cloud. However, these resources alone don't suffice as input for NeRFs, which demand a more specific format. NeRFs require not only the images captured at keyframes but also a COLMAP~\cite{colmap}, which contains essential information about the camera setup.
 
-Keyframes serve as pivotal snapshots within the video sequence, capturing unique elements from various perspectives. These frames are crucial for determining the precise position and orientation of the camera at different points in the scene. Drawing a parallel from the animation realm\cite{keyframes_in_animation}, keyframes are akin to markers that delineate significant moments or transitions between actions. In our context, these actions translate to movements such as forward progression or changes in direction.
+Keyframes serve as pivotal snapshots within the video sequence, capturing unique elements from various perspectives. These frames are crucial for determining the precise position and orientation of the camera at different points in the scene. Drawing a parallel from the animation realm~\cite{keyframes_in_animation}, keyframes are akin to markers that delineate significant moments or transitions between actions. In our context, these actions translate to movements such as forward progression or changes in direction.
 
-Additionally, the COLMAP plays a pivotal role by providing foundational data about the camera configuration, including camera positions within each image and a point cloud derived from the scene mapping process\cite{colmap}. This comprehensive dataset serves as the backbone for NeRFs, enabling them to synthesize realistic renderings by leveraging both visual information and spatial context.
+Additionally, the COLMAP plays a pivotal role by providing foundational data about the camera configuration, including camera positions within each image and a point cloud derived from the scene mapping process. This comprehensive dataset serves as the backbone for NeRFs, enabling them to synthesize realistic renderings by leveraging both visual information and spatial context.
 
 By integrating keyframes and COLMAP data, we can create a robust input pipeline for NeRFs, facilitating the generation of immersive and accurate 3D reconstructions from our captured videos and point cloud.
 
@@ -38,9 +40,9 @@ The execution of the command can be observed on Figure \ref{fig:sai_cli_process}
 	\label{fig:sai_cli_process}
 \end{figure}
 
-\section{Experimenting with nerfstudio}
+\section{Experimenting with Nerfstudio}
 
-With the created input the only thing that stops us from training a NeRF is installing a tool for it. For training I used Nerfstudio\cite{nerfstudio} but due to constant errors during installation with conda I switched to a simpler solution: Docker\footnote{\url{https://www.docker.com/}}. While browsing through the Docker images on DockerHub\footnote{\url{https://hub.docker.com/}}, I experienced that the official Docker image of nerfstudio (nerfstudio/nerfstudio\footnote{\url{https://hub.docker.com/r/nerfstudio/nerfstudio}}) is badly maintained: it is rarely updated and the tagging is unacceptable (the only tag of the image is \verb|latest| so we are unable to pull earlier versions of it)... Thankfully I found a more well-maintained image (dromni/nerfstudio\footnote{\url{https://hub.docker.com/r/dromni/nerfstudio}}) which is updated regularly and tagged professionally.
+With the created input the only thing that stops us from training a NeRF is installing a tool for it. For training I used Nerfstudio~\cite{nerfstudio} but due to constant errors during installation with conda I switched to a simpler solution: Docker\footnote{\url{https://www.docker.com/}}. While browsing through the Docker images on DockerHub\footnote{\url{https://hub.docker.com/}}, I experienced that the official Docker image of nerfstudio (nerfstudio/nerfstudio\footnote{\url{https://hub.docker.com/r/nerfstudio/nerfstudio}}) is badly maintained: it is rarely updated and the tagging is unacceptable (the only tag of the image is \verb|latest| so we are unable to pull earlier versions of it)... Thankfully I found a more well-maintained image (dromni/nerfstudio\footnote{\url{https://hub.docker.com/r/dromni/nerfstudio}}) which is updated regularly and tagged professionally.
 
 The Docker container can be started with the following command (I mounted the folders containing the inputs, gave permission for the container to use GPU, specified the user and increased the shared memory which the container can use):
 
@@ -89,6 +91,8 @@ The nerfstudio is capable of generating point clouds from the trained model, we 
 
 Overall, apart from the errors, a surprisingly good model has been created, thus proving the raison d'être of NeRFs.
 
+I would like to note here that in the second semester, where I used nerfstudio again, I tried to install it again using conda, and it succeeded, so later on I did not use Docker, but conda instead.
+
 \section{Experimenting with Luma AI}
 
 Later on we tried out an interesting, more user-friendly method of training NeRFs: Luma AI's iOS application\footnote{\url{https://apps.apple.com/us/app/luma-ai/id1615849914}} (the application exists for Android, too\footnote{\url{https://play.google.com/store/apps/details?id=ai.lumalabs.polar&hl=en_US&pli=1}}). We must own a phone with a LIDAR to use the app, I tried it using an iPhone 13 Pro and it worked absolutely well under it. I captured my cat's (Szotyi's) toy as a test. First I needed to specify the object's dimensions in a modern AR view, then I had to create pictures of the toy from different angles and positions. The app uploaded the images to the cloud and after some time the NeRF was trained so we could inspect it. The results were truly breathtaking, it was as realistic as the object was right in front of us as seen on Figure~\ref{fig:luma_ai_szotyi_toy}
@@ -102,7 +106,7 @@ Later on we tried out an interesting, more user-friendly method of training NeRF
 
 \section{Experimenting with Gaussian Splatting}
 
-As another approach for photorealistic reconstruction we tried out some Gaussian Splatting~\cite{3DGS} implementations. I found out that nerfstudio has a model that uses Gaussian Splatting, this model is called splatfacto~\cite{splatfacto} and since I already used nerfstudio I gave it a try. Needless to say it was not without hard parts. As I used the \verb|dromni/nerfstudio| image I always got an error by CUDA because the image did not find it installed (although it was). After some hours of debugging I tried to use the \verb|nerfstudio/nerfstudio| image to see if it works or not. Well, it did not work but I got another error message for the sake of change:
+As another approach for photorealistic reconstruction we tried out some Gaussian Splatting~\cite{3DGS} implementations. I found out that nerfstudio has a model that uses Gaussian Splatting, this model is called splatfacto~\cite{splatfacto} and since I already used nerfstudio I decided to experiment with this model. As I used the \verb|dromni/nerfstudio| image I always got an error by CUDA because the image did not find it installed (although it was). After some hours of debugging I tried to use the \verb|nerfstudio/nerfstudio| image to see if it works or not. It did not work but I got another error message for the sake of change:
 
 \FloatBarrier
 \begin{lstlisting}[language=bash,frame=single,float=!ht]
@@ -114,3 +118,5 @@ AssertionError: block width must be between 2 and 16
 As I searched for a solution it soon became clear that this is a very low-level problem with either nerfstudio or the splatfacto model\footnote{\url{https://github.com/nerfstudio-project/gsplat/issues/159}}. I tried upgrading the \verb|gsplat| package but the issue remained.
 
 After the failures we tried another Gaussian Splatting implementation\footnote{\url{https://github.com/graphdeco-inria/gaussian-splatting}} which finally started training but it threw \verb|CUDA out of memory| error every time. I inspected the repository and the developers stated that this works with 24 GB of VRAM. I have a GTX1660 GPU in my laptop with 6 GB of VRAM thus it was not enough for training. I tried using Google Colab for training but after it finished it had problems with saving the splats because the command always stopped with Out Of Memory errors and I was left there without the finished splat. My advisor, Gábor tried training on his GTX1080 and fortunately it had enough VRAM to finish it but the result is not worth even an image here because it was too blurry.
+
+In the second semester of my thesis writing the need of creating Gaussian splats came up again. We wanted to create Gaussian splats from the mapped environment of the robot so I tried \verb|nerfstudio|'s \verb|splatfacto| and \verb|splatfacto-big| models again. Fortunately it has been updated and I was able to create splats with my GTX1660 GPU so I did not have to ask Gábor for making splats. A Gaussian splat created by me can be seen on Figure~\ref{fig:spai_gsplat}
