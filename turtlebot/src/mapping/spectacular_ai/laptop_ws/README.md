@@ -23,9 +23,10 @@ source install/setup.bash
 
 First start the node on the Turtlebot.
 
-For visualizing the mapping, run the following command:
+For visualizing the mapping, run the following commands:
 ```
-ros2 launch src/rviz2_laptop/launch/mapping_rviz.py
+cd src/rviz2_laptop
+ros2 launch launch/mapping_rviz.py
 ```
 Now you should see the published point cloud, the position and orientation of the camera and the published images from the camera in RViz.
 
