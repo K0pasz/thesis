@@ -4,17 +4,19 @@
 
 In this chapter, we transition to using various 3D mapping solutions for real-time mapping on the Turtlebot4, running ROS2. This involved extensive testing of RTAB-Map~\cite{RTAB_Map_docs} with the OAK-D camera and Nvidia's nvblox~\cite{nvblox_docs} to assess their effectiveness and identify any limitations, particularly in terms of speed and orientation tracking.
 
-Since the Turtlebot4 is running ROS2, I needed to find a tool that can do the mapping and runs on the said framework. We have experimented with RTAB-Map (Real-Time Appearance-Based Mapping) and nvblox.
+Since the Turtlebot4 is running ROS2, a tool is needed to be found that can do the mapping and runs on the said framework. We have experimented with RTAB-Map (Real-Time Appearance-Based Mapping) and nvblox.
 
 
-\section{RTAB-Map using OAK-D} \label{experiments_rtab_map}
-First, I tried out RTAB-Map with the OAK-D camera. It is already implemented in ROS2 and it can be launched with the following command:
+\section{RTAB-Map Using OAK-D} \label{experiments_rtab_map}
+
+Our initial mapping experiments used RTAB-Map with the OAK-D camera, as it has an established ROS2 integration that can be launched with the following command:
+
 \FloatBarrier
 \begin{lstlisting}[language=bash,frame=single,float=!ht]
 $ ros2 launch depthai_ros_driver rtabmap.launch.py
 \end{lstlisting}
 
-The launched tool's UI can be seen on Figure \ref{fig:rtabmap_ros}. The top left panel shows the last keyframe captured by the camera, under it we can see the actual image recorded by it. On the right, we can inspect the built map:
+The RTAB-Map user interface is shown in Figure~\ref{fig:rtabmap_ros}. The top-left panel displays the last captured keyframe, with the current camera view directly below. On the right, we can view the ongoing map reconstruction.
 
 \begin{figure}[htbp]
 	\centering
@@ -23,25 +25,25 @@ The launched tool's UI can be seen on Figure \ref{fig:rtabmap_ros}. The top left
 	\label{fig:rtabmap_ros}
 \end{figure}
 
-When the device loses its orientation, it shows the last known position on the bottom left panel. When this happens the mapping stops and we have to navigate back to the exact same position where we lost track to get back on it and continue with the mapping. This is a huge downside of the application because this can happen quite a lot (especially in environments with poor lighting). Furthermore, we sometimes had to restart the entire mapping process because, although we returned the camera to the last known position, RTAB-Map could not recognize it. Another disadvantage of the tool is its speed; the camera's image lags significantly.
+One of the main limitations we encountered is RTAB-Map’s tendency to lose orientation; in such cases, the last known position is shown in the bottom-left panel, and mapping halts. To resume mapping, we must navigate back to this exact location, which is often challenging, particularly in low-light environments. Moreover, returning to the last known position did not always restore tracking, forcing us to restart the mapping process entirely. Another drawback is the latency in the camera feed, which slows down the overall process significantly.
 
-For the appropriate usage of RTAB-Map we had to modify its launch files. Our goal was to start the camera on the robot (because it is attached to it), then publish the images and IMU data onto a ROS topic which can be processed by the notebook on top.
+To optimize RTAB-Map for our setup, we modified its launch files to better manage the split between the robot and a notebook on top. Ideally, the camera (mounted on the robot) should send images and IMU data over a ROS topic for processing on the notebook, which has the necessary computational resources for RTAB-Map.
 
-When we start the \verb|rtabmap.launch.py| launch file inside the \verb|depthai_ros_driver| package it automatically starts the camera's node in addition to the RTAB-Map node. It was not ideal for us since the camera node should run on the robot and the RTAB-Map (which requires more computation resources) on the notebook. Our solution was to create a new launch file (which can be examined at \ref{rtabmap_custom_launch_file}) based on \verb|rtabmap.launch.py| which starts everything but the camera node. With the help of this we can launch RTAB-Map on the notebook without the camera. The camera can be started on the robot with the basic \verb|camera.launch.py| launch file from the \verb|depthai_ros_driver| package. A mapping made with this approach can be seen on Figure~\ref{fig:rtabmap_nokia}.
+By default, launching \verb|rtabmap.launch.py| from the \verb|depthai_ros_driver| package starts both the camera and RTAB-Map nodes, which was unsuitable for our setup. We needed the camera node to run on the robot and RTAB-Map on the notebook. Our solution was to create a custom launch file (details in Appendix \ref{rtabmap_custom_launch_file}) based on \verb|rtabmap.launch.py|, which excludes the camera node. Using this setup, we could launch the camera separately on the robot using \verb|camera.launch.py| from \verb|depthai_ros_driver|, while running RTAB-Map on the notebook. A map generated with this method is shown in Figure~\ref{fig:rtabmap_nokia}.
 
-To summarize our experiments, due to the lag and loss of orientation, it was problematic to create a map even in a small room (seen on Figure~\ref{fig:rtabmap_nokia}, it can be seen that a lot of irrelevant points are added to the map). This issue is more severe on the actual robot, which can turn at high angular speeds. It always lost track, and navigating back to the last known position was time-consuming and only moderately successful.
+In summary, RTAB-Map’s limitations in orientation tracking and the lagging camera feed made it challenging to create detailed maps, even in small environments. Figure~\ref{fig:rtabmap_nokia} highlights that numerous irrelevant points were added to the map due to frequent orientation losses. On the actual robot, this issue was exacerbated by its high angular speed, causing repeated loss of tracking and requiring significant time and effort to recover.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 	\centering
 	\includegraphics[width=150mm, keepaspectratio]{figures/rtabmap_ros_home.png}
-	\caption{RTAB-Map ROS generated point cloud map of our living room, camera held by hand}
+	\caption{RTAB-Map ROS-generated point cloud map of our living room, camera held by hand}
 	\label{fig:rtabmap_nokia}
 \end{figure}
 
 \FloatBarrier
-\section{RTAB-Map iOS}
+\section{RTAB-Map iOS Application}
 
-We tried the iOS version of RTAB-Map as a matter of interest and it worked more effectively than the ROS version with the OAK-D camera. I used the same iPhone 13 Pro and I got a relatively good reconstruction of my apartment, as shown on Figure~\ref{fig:luma_ai_szotyi_toy}. This app can create a mesh or a photorealistic map of our surrounding. When I generated a map it was running much smoother than the ROS version: it was not lagging at all and did not lost track even in rooms with poor light. A generated mesh map can be seen on Figure~\ref{fig:rtabmap_ios}.
+Out of curiosity, we also tested the iOS version of RTAB-Map and found it performed significantly better than the ROS version with the OAK-D camera. Using the same iPhone 13 Pro, I obtained a detailed reconstruction of my apartment, as shown in Figure~\ref{fig:rtabmap_ios}. This app can generate both mesh and photorealistic maps of indoor environments, operating smoothly without lag and maintaining tracking even in low-light conditions. Figure~\ref{fig:rtabmap_ios} shows a mesh map generated by the iOS app.
 
 \begin{figure}[htbp]
 	\centering
@@ -49,8 +51,10 @@ We tried the iOS version of RTAB-Map as a matter of interest and it worked more 
 	\caption{RTAB-Map iOS generated mesh map}
 	\label{fig:rtabmap_ios}
 \end{figure}
+\FloatBarrier
 
-The holes in the floor are visible because the dark brown laminate reflected the light coming through the window. This made the area that RTAB-Map did not recognize due to the diversity of colors.
+Some visible gaps in the floor area are due to light reflections from the dark brown laminate, which created a high-contrast region that RTAB-Map could not accurately interpret, resulting in unrecognized areas on the map.
+
 
 \section{Nvblox}
 

@@ -2,7 +2,7 @@
 
 \section{Overview}
 
-An additional objective we pursued was to generate 3D photorealistic models of the robot's environment, leveraging images captured during the mapping process. Upon completion of mapping, our aim was to seamlessly integrate the robot's 3D model into this reconstructed scene. This integration would enable real-time simulation of the robot's movements during localization, transcending beyond a mere representation with a point cloud to deliver a highly realistic simulation experience.
+An additional objective we pursued to generate 3D photorealistic models of the robot's environment, leveraging images captured during the mapping process. Upon completion of mapping, our aim was to seamlessly integrate the robot's 3D model into this reconstructed scene. This integration would enable real-time simulation of the robot's movements during localization, transcending beyond a mere representation with a point cloud to deliver a highly realistic simulation experience.
 
 
 \section{Using Spectacular AI to create input for NeRFs}
@@ -39,9 +39,9 @@ The execution of the command can be observed on Figure \ref{fig:sai_cli_process}
 
 \section{Experimenting with Nerfstudio}
 
-With the created input the only thing that stops us from training a NeRF is installing a tool for it. For training I used Nerfstudio~\cite{nerfstudio} but due to constant errors during installation with conda I switched to a simpler solution: Docker\footnote{\url{https://www.docker.com/}}. While browsing through the Docker images on DockerHub\footnote{\url{https://hub.docker.com/}}, I experienced that the official Docker image of nerfstudio (nerfstudio/nerfstudio\footnote{\url{https://hub.docker.com/r/nerfstudio/nerfstudio}}) is badly maintained: it is rarely updated and the tagging is unacceptable (the only tag of the image is \verb|latest| so we are unable to pull earlier versions of it)... Thankfully I found a more well-maintained image (dromni/nerfstudio\footnote{\url{https://hub.docker.com/r/dromni/nerfstudio}}) which is updated regularly and tagged professionally.
+With our input data ready, the next step for training a NeRF model was installing a suitable tool. For this, I chose to use Nerfstudio~\cite{nerfstudio}. However, frequent errors during installation with Conda prompted me to switch to a more straightforward solution: Docker\footnote{\url{https://www.docker.com/}}. While browsing DockerHub\footnote{\url{https://hub.docker.com/}}, I found that the official Docker image for Nerfstudio (nerfstudio/nerfstudio\footnote{\url{https://hub.docker.com/r/nerfstudio/nerfstudio}}) was poorly maintained: it was rarely updated, and it had only a single `latest` tag, making it impossible to pull previous versions. Fortunately, I discovered an alternative, well-maintained image (dromni/nerfstudio\footnote{\url{https://hub.docker.com/r/dromni/nerfstudio}}) that is frequently updated and includes a robust tagging system.
 
-The Docker container can be started with the following command (I mounted the folders containing the inputs, gave permission for the container to use GPU, specified the user and increased the shared memory which the container can use):
+To start the Docker container with this image, I used the following command, which mounts the necessary input directories, grants GPU access, specifies the user, and increases shared memory for the container:
 
 \FloatBarrier
 \begin{lstlisting}[language=bash,frame=single,float=!ht]
@@ -54,12 +54,13 @@ $ sudo docker run --gpus all \
     dromni/nerfstudio:main
 \end{lstlisting}
 
-The training can be started inside the container with the following command:
+Once inside the container, training can be started with the following command:
 \FloatBarrier
 \begin{lstlisting}[language=bash,frame=single,float=!ht]
 $ ns-train nerfacto --data PATH_TO_DATA
 \end{lstlisting}
-It is worth mentioning that nerfstudio has many trainable NeRF models, but for the sake of simplicity I sticked with the one mentioned in the quickstart guide\footnote{\url{https://docs.nerf.studio/quickstart/first_nerf.html}}, which is called nerfacto. The training process and a part of the trained model can be seen on Figure \ref{fig:training_nerf_karcag} and Figure \ref{fig:trained_nerf_karcag}.
+
+Nerfstudio offers a variety of NeRF models for training, but I followed the quickstart guide\footnote{\url{https://docs.nerf.studio/quickstart/first_nerf.html}} and chose the `nerfacto` model for simplicity. Figures \ref{fig:training_nerf_karcag} and \ref{fig:trained_nerf_karcag} show the training process and part of the trained model, respectively.
 
 \begin{figure}[htbp]
 	\centering
@@ -75,9 +76,9 @@ It is worth mentioning that nerfstudio has many trainable NeRF models, but for t
 	\label{fig:trained_nerf_karcag}
 \end{figure}
 
-The result was not without concerns due to the imperfect input. I captured the video at late afternoon so the lights were on. As seen in Figure~\ref{fig:trained_nerf_karcag}, the lights reflected on the TV's screen and some more shiny surfaces causing significant perturbation in the training. The other problem was caused by the length of the camera's cable. The device uses an USB3 cable for power and data transport and thanks to this the cable is relatively short for making large scale movements around the laptop connected to it. This resulted in blurry sections in the scene because I was not able to capture every object in the room from every direction.
+The results, while promising, were impacted by suboptimal input conditions. For instance, the video was captured in the late afternoon with artificial lighting, which led to reflections on the TV screen and other glossy surfaces, adding noise to the training process. Additionally, the USB3 cable for the camera—required for both power and data transmission—was relatively short, restricting my ability to capture all objects in the room from various angles. Consequently, certain areas of the scene appear blurry due to the lack of comprehensive coverage.
 
-The nerfstudio is capable of generating point clouds from the trained model, we can specify our needs on the viewer which generates us a command that we can run. A point cloud can be seen on Figure~\ref{fig:nerfstudio_point_cloud}.
+Nerfstudio also allows point cloud generation from the trained model. Users can specify parameters within the viewer, which generates a command for execution. A point cloud generated from the model is shown in Figure~\ref{fig:nerfstudio_point_cloud}.
 
 \begin{figure}[htbp]
 	\centering
@@ -86,13 +87,14 @@ The nerfstudio is capable of generating point clouds from the trained model, we 
 	\label{fig:nerfstudio_point_cloud}
 \end{figure}
 
-Overall, apart from the errors, a surprisingly good model has been created, thus proving the raison d'être of NeRFs.
+Despite these challenges, the final model was surprisingly accurate, validating the potential of NeRF technology. 
 
-I would like to note here that in the second semester, where I used nerfstudio again, I tried to install it again using conda, and it succeeded, so later on I did not use Docker, but conda instead.
+In a subsequent semester, I revisited Nerfstudio and attempted another installation via Conda, which, to my satisfaction, succeeded without errors. This allowed me to work natively on the system without Docker, streamlining my workflow significantly and eliminating the need for containerized setups.
+
 
 \section{Experimenting with Luma AI}
 
-Later on we tried out an interesting, more user-friendly method of training NeRFs: Luma AI's iOS application\footnote{\url{https://apps.apple.com/us/app/luma-ai/id1615849914}} (the application exists for Android, too\footnote{\url{https://play.google.com/store/apps/details?id=ai.lumalabs.polar&hl=en_US&pli=1}}). We must own a phone with a LIDAR to use the app, I tried it using an iPhone 13 Pro and it worked absolutely well under it. I captured my cat's (Szotyi's) toy as a test. First I needed to specify the object's dimensions in a modern AR view, then I had to create pictures of the toy from different angles and positions. The app uploaded the images to the cloud and after some time the NeRF was trained so we could inspect it. The results were truly breathtaking, it was as realistic as the object was right in front of us as seen on Figure~\ref{fig:luma_ai_szotyi_toy}
+In exploring NeRFs, we also experimented with Luma AI’s iOS application\footnote{\url{https://apps.apple.com/us/app/luma-ai/id1615849914}}, a more user-friendly approach to NeRF training (an Android version is available\footnote{\url{https://play.google.com/store/apps/details?id=ai.lumalabs.polar&hl=en_US&pli=1}} too). This app requires a LiDAR-equipped phone; I used an iPhone 13 Pro, and the app performed flawlessly on it. I selected my cat Szotyi’s toy for testing, first defining the object’s dimensions in an AR view, then capturing images from various angles. The app automatically uploaded these to the cloud, where it trained a NeRF. Once complete, the NeRF was remarkably lifelike, as if the toy were right in front of me, as shown in Figure~\ref{fig:luma_ai_szotyi_toy}.
 
 \begin{figure}[htbp]
 	\centering
@@ -103,7 +105,7 @@ Later on we tried out an interesting, more user-friendly method of training NeRF
 
 \section{Experimenting with Gaussian Splatting}
 
-As another approach for photorealistic reconstruction we tried out some Gaussian Splatting~\cite{3DGS} implementations. I found out that nerfstudio has a model that uses Gaussian Splatting, this model is called splatfacto~\cite{splatfacto} and since I already used nerfstudio I decided to experiment with this model. As I used the \verb|dromni/nerfstudio| image I always got an error by CUDA because the image did not find it installed (although it was). After some hours of debugging I tried to use the \verb|nerfstudio/nerfstudio| image to see if it works or not. It did not work but I got another error message for the sake of change:
+To further explore photorealistic reconstructions, we experimented with Gaussian Splatting~\cite{3DGS}. Since Nerfstudio offers a model utilizing Gaussian Splatting, called \texttt{splatfacto}~\cite{splatfacto}, I chose to work with this model due to my existing experience with Nerfstudio. However, using the \texttt{dromni/nerfstudio} Docker image caused persistent CUDA errors as it failed to detect the installation, despite its presence. After hours of troubleshooting, I switched to the official \texttt{nerfstudio/nerfstudio} image, only to encounter a different error:
 
 \FloatBarrier
 \begin{lstlisting}[language=bash,frame=single,float=!ht]
@@ -112,8 +114,8 @@ assert block width > 1 and block width <= 16,
 AssertionError: block width must be between 2 and 16
 \end{lstlisting}
 
-As I searched for a solution it soon became clear that this is a very low-level problem with either nerfstudio or the splatfacto model\footnote{\url{https://github.com/nerfstudio-project/gsplat/issues/159}}. I tried upgrading the \verb|gsplat| package but the issue remained.
+Investigation revealed that this issue stemmed from low-level incompatibilities within either Nerfstudio or the \texttt{splatfacto} model\footnote{\url{https://github.com/nerfstudio-project/gsplat/issues/159}}. Upgrading the \texttt{gsplat} package proved ineffective.
 
-After the failures we tried another Gaussian Splatting implementation\footnote{\url{https://github.com/graphdeco-inria/gaussian-splatting}} which finally started training but it threw \verb|CUDA out of memory| error every time. I inspected the repository and the developers stated that this works with 24 GB of VRAM. I have a GTX1660 GPU in my laptop with 6 GB of VRAM thus it was not enough for training. I tried using Google Colab for training but after it finished it had problems with saving the splats because the command always stopped with Out Of Memory errors and I was left there without the finished splat. My advisor, Gábor tried training on his GTX1080 and fortunately it had enough VRAM to finish it but the result is not worth even an image here because it was too blurry.
+In response, I tried an alternative Gaussian Splatting implementation\footnote{\url{https://github.com/graphdeco-inria/gaussian-splatting}}, which successfully began training but consistently failed with \texttt{CUDA out of memory} errors. This implementation demands 24 GB of VRAM, exceeding my GTX 1660’s 6 GB capacity. Using Google Colab as an alternative initially worked but ultimately failed due to memory limitations during the saving process. Fortunately, my advisor Gábor was able to complete training on his GTX 1080 GPU, though the result was disappointingly blurry.
 
-In the second semester of my thesis writing the need of creating Gaussian splats came up again. We wanted to create Gaussian splats from the mapped environment of the robot so I tried \verb|nerfstudio|'s \verb|splatfacto| and \verb|splatfacto-big| models again. Fortunately it has been updated and I was able to create splats with my GTX1660 GPU so I did not have to ask Gábor for making splats. A Gaussian splat created by me can be seen on Figure~\ref{fig:spai_gsplat}
+In my second semester, Gaussian Splats again became essential, particularly for representing the robot’s mapped environment. I revisited \texttt{nerfstudio}'s \texttt{splatfacto} and \texttt{splatfacto-big} models, which had been updated since my previous attempts. This time, the models successfully ran on my GTX 1660 GPU, eliminating the need for external support. An example Gaussian Splat I generated is shown in Figure~\ref{fig:spai_gsplat}.
