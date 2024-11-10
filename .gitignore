@@ -12,3 +12,4 @@ project.ini
 config.yml
 *.ckpt
 gsplat_input/
+*keyframe*.json
