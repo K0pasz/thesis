@@ -11,3 +11,4 @@ processed/
 project.ini
 config.yml
 *.ckpt
+gsplat_input/
