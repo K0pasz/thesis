@@ -67,7 +67,8 @@ def create_transforms_json(image_dir, images_output_dir, camera_info_path, outpu
         "cy": cy,
         "h": height,
         "w": width,
-        "frames": frames
+        "frames": frames,
+        "ply_file_path": "sparse_pc.ply"
     }
 
     transforms_path = os.path.join(output_dir, "transforms.json")
@@ -75,6 +76,7 @@ def create_transforms_json(image_dir, images_output_dir, camera_info_path, outpu
         json.dump(transforms_data, f, indent=4)
     
     print(f"transforms.json created at {transforms_path}")
+
 
 def copy_ply_file(ply_file_path, output_dir):
     """Copy the .ply file to the output directory."""
