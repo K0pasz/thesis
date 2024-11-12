@@ -27,9 +27,15 @@ def pose_to_transform_matrix(position, orientation):
     """Convert position and orientation to a 4x4 transformation matrix."""
     translation = np.array([position["x"], position["y"], position["z"]])
     rotation = R.from_quat([orientation["x"], orientation["y"], orientation["z"], orientation["w"]])
+    
     transform_matrix = np.eye(4)
     transform_matrix[:3, :3] = rotation.as_matrix()
     transform_matrix[:3, 3] = translation
+
+    # Flipping around X axis -> nerfstudio uses this convention
+    flip_x = np.diag([1, -1, -1])
+    transform_matrix[:3, :3] = transform_matrix[:3, :3] @ flip_x
+
     return transform_matrix.tolist()
 
 def create_transforms_json(image_dir, images_output_dir, camera_info_path, output_dir):
@@ -77,7 +83,7 @@ def create_transforms_json(image_dir, images_output_dir, camera_info_path, outpu
     
     print(f"transforms.json created at {transforms_path}")
 
-
+# TODO: Maybe we need the flip_x here as well, need to try it out
 def copy_ply_file(ply_file_path, output_dir):
     """Copy the .ply file to the output directory."""
     if os.path.exists(ply_file_path):
