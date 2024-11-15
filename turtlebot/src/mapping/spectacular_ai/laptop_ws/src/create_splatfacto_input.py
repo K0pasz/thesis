@@ -6,6 +6,20 @@ import argparse
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 
+# Vision to graphics transformation matrix
+T_vision_to_graphics = np.diag([1, -1, -1, 1])
+
+# Robotics to vision transformation matrix
+T_vision_to_robotics = np.array([
+    [ 0.0,  0.0,  1.0, 0.0],
+    [-1.0,  0.0,  0.0, 0.0],
+    [ 0.0, -1.0,  0.0, 0.0],
+    [ 0.0,  0.0,  0.0, 1.0]
+])
+
+T_robotics_to_vision = np.linalg.inv(T_vision_to_robotics)
+
+
 def load_camera_info(camera_info_path):
     """Load camera intrinsics from camera_info.json."""
     with open(camera_info_path, 'r') as f:
@@ -28,15 +42,37 @@ def pose_to_transform_matrix(position, orientation):
     translation = np.array([position["x"], position["y"], position["z"]])
     rotation = R.from_quat([orientation["x"], orientation["y"], orientation["z"], orientation["w"]])
     
-    transform_matrix = np.eye(4)
-    transform_matrix[:3, :3] = rotation.as_matrix()
-    transform_matrix[:3, 3] = translation
+    # Initial transformation matrix
+    pose_robotics = np.eye(4)
+    pose_robotics[:3, :3] = rotation.as_matrix()
+    pose_robotics[:3, 3] = translation
+    
+    # Apply the transformation
+    #transform_matrix = T_robotics_to_vision @ transform_matrix # camera2world (pose)
 
-    # Flipping around X axis -> nerfstudio uses this convention
-    flip_x = np.diag([1, -1, -1])
-    transform_matrix[:3, :3] = transform_matrix[:3, :3] @ flip_x
 
-    return transform_matrix.tolist()
+    #transform_matrix = transform_matrix @ T_vision_to_robotics
+
+    
+    #transform_matrix = T_vision_to_graphics @ transform_matrix
+
+    
+    #transform_matrix = transform_matrix @ T_vision_to_robotics
+    #transform_matrix = np.linalg.inv(transform_matrix) # world2camera
+
+    #transform_matrix = T_robotics_to_vision @ transform_matrix
+    #transform_matrix = transform_matrix @ T_vision_to_graphics
+
+
+    pose_vision = T_vision_to_robotics @ pose_robotics
+    pose_graphics = pose_vision @ T_vision_to_graphics
+    
+    
+    #pose_graphics = pose_new @ T_vision_to_graphics
+    #pose_vision = np.eye(4)
+    #pose_vision = pose_robotics @ T_robotics_to_vision ???
+
+    return pose_graphics.tolist()
 
 def create_transforms_json(image_dir, images_output_dir, camera_info_path, output_dir):
     """Generate transforms.json for NeRFStudio using existing pose files and camera_info.json."""
@@ -83,14 +119,90 @@ def create_transforms_json(image_dir, images_output_dir, camera_info_path, outpu
     
     print(f"transforms.json created at {transforms_path}")
 
-# TODO: Maybe we need the flip_x here as well, need to try it out
+
 def copy_ply_file(ply_file_path, output_dir):
-    """Copy the .ply file to the output directory."""
-    if os.path.exists(ply_file_path):
-        shutil.copy(ply_file_path, output_dir)
-        print(f"PLY file copied to {output_dir}")
-    else:
+    """Copy and transform the .ply file points to the output directory."""
+    if not os.path.exists(ply_file_path):
         print(f"PLY file not found at {ply_file_path}")
+        return
+    
+    transformed_ply_path = os.path.join(output_dir, "sparse_pc.ply")
+    
+    # Robotics to vision transformation matrix
+
+    with open(ply_file_path, 'r') as f:
+        lines = f.readlines()
+
+    # Find the starting point of vertex data
+    header_lines = []
+    vertex_data = []
+    header_complete = False
+
+    for line in lines:
+        if line.startswith("end_header"):
+            header_complete = True
+            header_lines.append(line)
+            continue
+        if header_complete:
+            # Skip empty lines or any lines that do not contain three values (for vertices)
+            parts = line.strip().split()
+            if len(parts) == 3:  # Ensure there are exactly three values (x, y, z)
+                vertex_data.append(parts)
+        else:
+            header_lines.append(line)
+
+    # Total number of vertices to process
+    total_vertices = len(vertex_data)
+
+    # Transform each vertex point and save to a new file
+    with open(transformed_ply_path, 'w') as f:
+        f.writelines(header_lines)
+        for idx, line in enumerate(vertex_data):
+            x, y, z = map(float, line)
+            vertex_coords = np.array([x, y, z, 1])
+            
+            # EREDETI
+            #transformed_point = T_robotics_to_vision @ vertex_coords
+            #transformed_point = transformed_point @ T_vision_to_graphics
+
+            #transformed_point = vertex_coords @ T_vision_to_graphics
+
+            #transformed_point = T_vision_to_graphics @ vertex_coords
+
+            #transformed_point = T_robotics_to_vision @ vertex_coords
+
+            #transformed_point = vertex_coords @ T_robotics_to_vision
+
+
+            #transformed_point = T_robotics_to_vision @ vertex_coords
+            #transformed_point = transformed_point @ T_vision_to_graphics
+
+            #transformed_point = vertex_coords @ T_robotics_to_vision
+            #transformed_point = transformed_point @ T_vision_to_graphics
+
+            #transformed_point = T_robotics_to_vision @ vertex_coords
+            #transformed_point = T_vision_to_graphics @ transformed_point
+
+            #transformed_point = vertex_coords @ T_robotics_to_vision
+            #transformed_point = T_vision_to_graphics @ transformed_point
+
+            #T_full = T_vision_to_graphics @ T_robotics_to_vision
+
+            #T_full = np.linalg.inv(T_vision_to_graphics) @ T_robotics_to_vision
+
+            #transformed_point = T_full @ vertex_coords
+
+            transformed_point = T_vision_to_robotics @ vertex_coords
+
+            f.write(f"{transformed_point[0]} {transformed_point[1]} {transformed_point[2]}\n")
+            
+            # Print progress update every 1% of total vertices processed
+            if (idx + 1) % (total_vertices // 100) == 0:
+                progress = (idx + 1) / total_vertices * 100
+                print(f"Processing vertices: {progress:.2f}% ({idx + 1}/{total_vertices})")
+
+    print(f"Transformed PLY file saved to {transformed_ply_path}")
+    
 
 def main():
     parser = argparse.ArgumentParser(description="Prepare dataset for Nerfstudio SplatFacto.")
