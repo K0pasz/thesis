@@ -13,3 +13,14 @@ config.yml
 *.ckpt
 gsplat_input/
 *keyframe*.json
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+thesis.log
+thesis.out
+thesis.pdf
+*.gz
+*.thm
+*.toc

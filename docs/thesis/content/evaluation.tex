@@ -108,10 +108,9 @@ To evaluate the capabilities of my pipeline and Gaussian splatting we used the r
     \item The images' quality is good enough for training the model.
     \item The poses are accurate: we measured the distance and the rotation between distant keyframes ourselves and the poses we get from the camera are accurate.
     \item The transformations are checked, during the training process we are able to inspect the trajectory of the keyframes in the viser, and they reflect reality. It is possible to display the pointcloud during training too, with this functionality we could check the alignment of the poses and the pointcloud. It can be seen on Figure~\ref{fig:trajectory_and_pointcloud} and Figure~\ref{fig:pointcloud_debug} that the poses and the pointcloud align well, they show the exact same corner.
-    \item I checked the pointcloud, and I realised that the root cause of the misalignments of reality was caused by that. As it can be inspected on Figure~\ref{fig:pointcloud_debug} there are numerous points added to the cloud that are not present in reality, they appear as a noise and corrupt the reconstruction. The other problem is that there is a bump in the floor and it causes some points which represent the floor to be slightly tilted, this can be seen on Figure~\ref{fig:pointcloud_debug1}.
+    \item I checked the pointcloud, and I realised that the root cause of the misalignments of reality was caused by that. As it can be inspected on Figure~\ref{fig:pointcloud_debug} there are numerous points added to the cloud that are not present in reality, they appear as a noise and corrupt the reconstruction. Gaussian splatting is very sensitive to this kind of noise because it tries to fit a Gaussian to each point, in other words, every point in the cloud will represent a surface in the splat (even the noise). The other problem is that there is a bump in the floor and it causes some points which represent the floor to be slightly tilted, this can be seen on Figure~\ref{fig:pointcloud_debug1}.
 \end{itemize}
 
-In conclusion, we can say that Gaussian Splatting treats the input point cloud sensitively thus making it hard to use with noisy pointcloud data.
 
 \begin{figure}[htbp]
 	\centering
@@ -149,10 +148,7 @@ In conclusion, we can say that Gaussian Splatting treats the input point cloud s
 \end{figure}
 
 
-
-
-\FloatBarrier
-COLMAP TODO:
+To prove that the reconstruction can be used in mapping scenarios, we used the images with calculated poses and pointclouds to compare the results. For calculation we used COLMAP which can be used for pointcloud reconstruction and pose estimation from images. The result can be seen on Figure~\ref{fig:nokia_splatfacto_colmap_1} and Figure~\ref{fig:nokia_splatfacto_colmap_2}.
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=150mm, keepaspectratio]{figures_jpg/nokia_splatfacto_1.jpg}
@@ -167,5 +163,4 @@ COLMAP TODO:
 	\label{fig:nokia_splatfacto_colmap_2}
 \end{figure}
 
-
-
+In conclusion, it can be seen that the result where we used COLMAP for pose estimation and pointcloud reconstruction appears to depict the real environment precisely. If we would be able to somehow filter out the noise from the pointcloud calculated by the camera, our result would be as accurate as COLMAP's (or even more). Unfortunately we did not have time to implement this filtering during the thesis.
