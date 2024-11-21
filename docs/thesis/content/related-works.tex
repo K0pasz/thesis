@@ -93,14 +93,14 @@ Active stereo cameras project an infrared light pattern into the scene, so they 
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=100mm, keepaspectratio]{figures/active-vs-passive-stereo.png}
+    \includegraphics[width=100mm, keepaspectratio]{figures_jpg/active-vs-passive-stereo.jpg}
     \caption{Passive vs active stereo feature matching (source:\cite{ActivePassiveStereo})}
     \label{fig:active-passive-stereo}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=50mm, keepaspectratio]{figures/turtlebot4_architecture.png}
+    \includegraphics[width=50mm, keepaspectratio]{figures_jpg/turtlebot4_architecture.jpg}
     \caption{Architectural diagram of the mobile robot system at Nokia Bell Labs}
     \label{fig:mobile_robot_architecture}
 \end{figure}
@@ -114,8 +114,6 @@ Spectacular AI\footnote{\url{https://www.spectacularai.com/}} is a Finnish compa
 \begin{itemize}
 \setlength\itemsep{0em}
     \item pose tracking using camera and IMU fusion,
-    %\item camera image visualization,
-    %\item IMU localization visualization,
     \item point cloud mapping,
     \item 3D visualization of the agent trajectory
     \item AR mapping with meshes or point clouds,
@@ -156,11 +154,3 @@ NVIDIA’s nvblox~\cite{nvblox_docs} is a GPU-accelerated spatial mapping librar
 One of the key advantages of nvblox is its ability to generate high-resolution voxel grids and mesh representations at impressive speeds, a performance largely unattainable with CPU-only mapping solutions. nvblox achieves this by maintaining and updating a voxel grid map where each voxel represents a small cube in the 3D environment, storing spatial information like occupancy and color. It also incorporates functionality to convert voxel maps into triangular meshes, which can then be visualized or further processed. With its ROS2 compatibility, nvblox can work as a ROS node, allowing direct integration with popular robotic systems and sensor data sources like RGB-D cameras, stereo cameras, and LIDAR, making it a practical solution for ROS-based projects.
 
 Another significant feature of nvblox is its flexibility to run on various NVIDIA platforms, including Jetson devices, which are popular in edge computing and mobile robotics. This makes nvblox ideal for field applications where high-performance spatial understanding is critical. By reducing the computational load traditionally associated with real-time 3D mapping and enhancing efficiency, nvblox enables the creation of robust, high-fidelity maps that allow robots to react to and understand their environments effectively.
-
-
-% Do we even need this section?
-% \section{Localization}
-
-% After creating a detailed map, it becomes essential to explore various approaches for photorealistic localization. Photorealistic localization involves using high-fidelity 3D reconstructions of the environment to accurately determine the robot's position and orientation. This can be particularly beneficial for tasks requiring high precision, such as navigation in complex or dynamic environments.
-
-% One promising approach is to train Neural Radiance Fields (NeRFs) or create Gaussian Splats from the mapped environment. NeRFs leverage neural networks to synthesize novel views of a scene based on a sparse set of input images, providing a continuous 3D representation. Gaussian Splats, on the other hand, use point-based rendering techniques to represent the scene with a collection of Gaussian functions, enabling efficient and scalable visualization.
