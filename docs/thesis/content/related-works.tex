@@ -1,5 +1,13 @@
 \chapter{Applied technologies} \label{related_works}
 
+This chapter provides a comprehensive overview of the key technologies utilized in this thesis, detailing their capabilities, applications, and relevance to the project. Each section explores a specific technology or framework that was instrumental in the development and implementation of the robotic system.
+
+The technologies discussed include the Robot Operating System 2 (ROS2), which serves as the foundation for communication and coordination within the robotic system, and the Turtlebot4, the mobile robotic platform used for experimentation. Additionally, the chapter delves into the hardware components integrated into the platform, such as the Raspberry Pi 4, RPLIDAR-A1, and OAK-D cameras, highlighting their roles in sensor fusion and environmental perception.
+
+Furthermore, the chapter introduces software frameworks like the Spectacular AI SDK, which supports advanced visual-inertial tracking and mapping, and NVIDIA’s nvblox, a GPU-accelerated mapping library for real-time 3D reconstruction. It also touches upon state-of-the-art methodologies like Gaussian splatting and RTAB-Map, which enable advanced 3D visualization and real-time SLAM, respectively.
+
+This chapter serves as both a technical foundation and a reference for the methods and tools that underpin the contributions of this thesis.
+
 \section{Robot Operating System}
 
 The ROS2 \cite{ROS2} (Robot Operating System 2) is not an operating system despite its name; it is a comprehensive framework for building robotic systems. This framework facilitates the development, deployment, and management of complex robotic applications by providing a collection of tools, libraries, and conventions designed to simplify the process.
@@ -12,16 +20,16 @@ Actions, on the other hand, are designed for long-running tasks. They allow a cl
 
 One of the most compelling advantages of ROS2 is its language-agnostic design. Nodes can be written in multiple programming languages, primarily C++ and Python, and they can interoperate seamlessly. This interoperability is ensured by the strict message type definitions for topics, services, and actions, which remain consistent across different languages. This feature allows developers to leverage the strengths of each language; for instance, C++ for performance-critical tasks and Python for rapid prototyping and development.
 
-In our research, we leverage ROS2 to integrate and manage the various components of our robotic system, including sensor integration, real-time mapping, and navigation. The modularity and flexibility provided by ROS2 enable us to experiment with different approaches and quickly adapt to new requirements or challenges that arise during the development process.
+In our research, we leverage ROS2 to integrate and manage the various components of our robotic system, including sensor integration and real-time mapping. The modularity and flexibility provided by ROS2 enable us to experiment with different approaches and quickly adapt to new requirements or challenges that arise during the development process.
 
 \section{Turtlebot4}
-At Nokia, we worked on a Turtlebot4\footnote{\url{https://clearpathrobotics.com/turtlebot-4/}} which consists of an iRobot Create3 base\footnote{\url{https://edu.irobot.com/what-we-offer/create3}}, a Raspberry Pi 4 host computer, and a companion laptop attached to it. Create3 is a robot vacuum cleaner's base made for educational use. It contains the differential drive, the IR proximity sensors in the front and the docking station for charging. All in all it can be used to build more complex mobile robots.
-A stereo camera and a rotating horizontal LIDAR are connected to the host computer via USB and the robot is connected to the notebook via Gigabit Ethernet so they can communicate on ROS topics. A diagram of the mentioned structure can be examined on Figure \ref{fig:mobile_robot_architecture}. The Turtlebot4 comes in two editions depending on equipment, we have the standard version. An image of the two editions of the robot can be seen on Figure \ref{fig:turtlebot4}.
+At Nokia, we worked on a Turtlebot4\footnote{\url{https://clearpathrobotics.com/turtlebot-4/}} which consists of an iRobot Create3 base\footnote{\url{https://edu.irobot.com/what-we-offer/create3}}, a Raspberry Pi 4 host computer, and a companion laptop attached to it. Create3 is a robot vacuum cleaner's base made for educational use. It contains the differential drive, the IR proximity sensors in the front and the docking station for charging. All in all, it can be used to build more complex mobile robots.
+A stereo camera and a rotating horizontal LiDAR are connected to the host computer via USB and the robot is connected to the notebook via Gigabit Ethernet so they can communicate over ROS topics. A diagram of the mentioned structure can be examined on Figure \ref{fig:mobile_robot_architecture}. The Turtlebot4 comes in two editions depending on equipment, we used the standard version. An image of the two editions of the robot can be seen on Figure \ref{fig:turtlebot4}.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=150mm, keepaspectratio]{figures/TurtleBot4.jpg}
-    \caption{Turtlebot4 Lite (left) and Turtlebot4 (source:\cite{Turtlebot4Pic})}
+    \caption{Turtlebot4 Lite (left) and Turtlebot4, source:\cite{Turtlebot4Pic}}
     \label{fig:turtlebot4}
 \end{figure}
 
@@ -35,7 +43,6 @@ A stereo camera and a rotating horizontal LIDAR are connected to the host comput
 
 
 
-%\subsection{Raspberry Pi 4}
 The host computer of the robot, a Raspberry Pi 4\footnote{\url{https://www.raspberrypi.com/products/raspberry-pi-4-model-b/}} is a mini PC which can be used in various applications:
 at home as a desktop PC,
 as a NAS (Network-Attached Storage),
@@ -45,14 +52,13 @@ in mobile robots, just to name only a few examples.
 The Raspberry Pi 4 is equipped with a quad core ARM v8 Cortex-A72\footnote{\url{https://www.arm.com/products/silicon-ip-cpu/cortex-a/cortex-a72}} 64-bit SoC, Gigabit ethernet, 2 micro-HDMI ports which support resolution up to 4K, an USB-C power input and 2, 4 or 8 GB of RAM (it can be chosen by our needs or budget). In the Turtlebot4 the Raspberry Pi is used to run ROS2.
 
 
-%\subsection{RPLIDAR-A1}
 The Turtlebot4 is equipped with an RPLIDAR-A1\footnote{\url{https://www.slamtec.ai/product/slamtec-rplidar-a1/}} by Slamtech. It is a 2D LIDAR which can scan its surroundings up to 12 meters in 360°. Its maximum resolution is 1° with a maximum sampling frequency of 1\,Hz.
 The sensor is plug-and-play, it has a USB interface, open-source SDK and ROS2 integration. It goes without saying, but it is worth noting that it meets the Class 1 laser safety standard and is completely safe for human eyes~\cite{LaserSafety}.
 
 %\subsection{OAK-D Pro}
-The Turtlebot 4 Standard also comes with an OAK-D Pro stereo camera as seen on Figure~\ref{fig:oak_d_pro_nokia}. OAK\footnote{\url{https://shop.luxonis.com/collections/oak-cameras-1}} is a robotic vision camera series made by Luxonis\footnote{\url{https://www.luxonis.com/}}. Additionally, I got another OAK-D model from Nokia to test my implementations at home during the writing of my thesis.
+The Turtlebot 4 Standard also comes with an OAK-D Pro stereo camera as seen on Figure~\ref{fig:oak_d_pro_nokia}. OAK\footnote{\url{https://shop.luxonis.com/collections/oak-cameras-1}} is a robotic vision camera series made by Luxonis\footnote{\url{https://www.luxonis.com/}}, which sensors are pre-calibrated during manufacturing. Additionally, I got another OAK-D model from Nokia to test my implementations at home during the writing of my thesis.
 
-The specifications of the OAK-D:
+The specifications of the OAK-D and OAK-D Pro:
 \begin{table}[h!]
 \centering
 \begin{tabular}{|>{\raggedright\arraybackslash}p{0.45\linewidth}|>{\raggedright\arraybackslash}p{0.45\linewidth}|}
@@ -94,7 +100,7 @@ Active stereo cameras project an infrared light pattern into the scene, so they 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=100mm, keepaspectratio]{figures_jpg/active-vs-passive-stereo.jpg}
-    \caption{Passive vs active stereo feature matching (source:\cite{ActivePassiveStereo})}
+    \caption{Passive vs active stereo feature matching, source:\cite{ActivePassiveStereo}}
     \label{fig:active-passive-stereo}
 \end{figure}
 
@@ -121,13 +127,49 @@ Spectacular AI\footnote{\url{https://www.spectacularai.com/}} is a Finnish compa
 \end{itemize}
 % Ensure no floats within the list
 \FloatBarrier
-The main goal of the SDK is to lend us a hand when we want to do SLAM with an OAK camera. It supports working with ROS through some basic ROS nodes and bridges. The SDK's main strenght is the usage of the IMU and VPU in the OAK camera.
+The primary objective of the SDK is to assist in performing SLAM using an OAK camera. It supports working with ROS through some basic ROS nodes and bridges. The SDK's main strength is the usage of the IMU and VPU in the OAK camera.
 
-Spectacular AI's SDK serves as a catalyst for innovation in computer vision applications, catering to a diverse range of industries and use cases. Its intuitive interface and comprehensive feature set make it a valuable tool for developers seeking to harness the full potential of OAK cameras in their projects.
+
+\section{RTAB-Map}
+
+RTAB-Map\footnote{\url{https://introlab.github.io/rtabmap/}} (Real-Time Appearance-Based Mapping~\cite{RTAB_Map_docs}) is a graph-based SLAM approach designed for long-term and large-scale mapping in real-time. It is widely used in robotics applications due to its capability to create detailed and accurate maps while efficiently managing computational resources. The mapping process can be seen on Figure~\ref{fig:rtabmap_applied_techs}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=100mm, keepaspectratio]{figures_jpg/rtabmap_for_applied_techs.jpg}
+    \caption{RTAB-Map mapping process, source:~\cite{rtabmap_applied_techs}}
+    \label{fig:rtabmap_applied_techs}
+\end{figure}
+
+RTAB-Map was introduced by Labbé and Michaud in 2013 as a solution to address the challenges of real-time 3D mapping. The core concept of RTAB-Map is to utilize an appearance-based loop closure detection method, which significantly enhances the robustness and accuracy of the mapping process. This method allows the system to recognize previously visited locations, thereby correcting the trajectory and reducing cumulative errors typically associated with SLAM algorithms.
+
+One of the key features of RTAB-Map is its ability to handle large-scale environments. It achieves this by organizing the map into a graph structure where nodes represent keyframes, and edges represent spatial constraints between them. This graph structure is continuously optimized to improve the accuracy of the map and the estimated trajectory. Additionally, RTAB-Map employs a memory management strategy to keep the computational load manageable, ensuring that the system can operate in real-time even with extensive data.
+
+RTAB-Map is highly versatile and supports various sensor configurations, including RGB-D cameras, stereo cameras, and LiDAR sensors. This flexibility makes it suitable for a wide range of applications, from indoor navigation to outdoor exploration. Moreover, RTAB-Map is integrated with ROS, providing a comprehensive suite of tools for robotic development and deployment. RTAB-Map has an iOS application too that works on iPhones which has LiDARs\footnote{\url{https://apps.apple.com/cd/app/rtab-map-3d-lidar-scanner/id1564774365}}.
+
+\section{NVIDIA nvblox}
+
+NVIDIA’s nvblox~\cite{nvblox_docs} is a GPU-accelerated spatial mapping library designed to work seamlessly with ROS2 and other robotics frameworks for real-time 3D environment reconstruction. Leveraging NVIDIA’s CUDA technology, nvblox processes data from depth sensors and LiDAR in real time, enabling robots to build and update dense 3D maps of their surroundings with low latency. Its main use cases include robotics applications requiring immediate spatial awareness, such as autonomous navigation, manipulation, and exploration in dynamically changing environments as seen on Figure~\ref{fig:nvblox_applied_techs}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=100mm, keepaspectratio]{figures_jpg/nvblox_applied_techs.jpg}
+    \caption{Nvblox exploration in dynamic environment, source:~\cite{nvblox}}
+    \label{fig:nvblox_applied_techs}
+\end{figure}
+
+One of the key advantages of nvblox is its ability to generate high-resolution voxel grids and mesh representations at impressive speeds, a performance largely unattainable with CPU-only mapping solutions. A voxel map~\cite{voxelmap} is a 3D representation of an environment that divides the space into small, uniform cubes called voxels (volume elements), each storing spatial attributes such as occupancy, color, or surface normals. These attributes allow voxel maps to capture detailed environmental information in a compact and structured format, making them suitable for applications like navigation, object recognition, and path planning.
+
+To enhance efficiency and scalability, some voxel mapping systems implement hierarchical voxel maps~\cite{hierarchical_voxelmap}, which organize voxels into a tree-like structure where finer detail is stored only in areas of interest. This hierarchical approach reduces memory usage and computational overhead by representing large, mostly empty spaces with coarser resolutions, while maintaining high-resolution detail in regions of complexity or activity.
+
+Nvblox achieves its performance by maintaining and updating a voxel grid map. It also incorporates functionality to convert voxel maps into triangular meshes, which can then be visualized or further processed. With its ROS2 compatibility, nvblox can work as a ROS node, allowing direct integration with popular robotic systems and sensor data sources like RGB-D cameras, stereo cameras, and LiDAR, making it a practical solution for ROS-based projects.
+Another significant feature of nvblox is its flexibility to run on various NVIDIA platforms, including Jetson devices, which are popular in edge computing and mobile robotics. This makes nvblox ideal for field applications where high-performance spatial understanding is critical. By reducing the computational load traditionally associated with real-time 3D mapping and enhancing efficiency, nvblox enables the creation of robust, high-fidelity maps that allow robots to react to and understand their environments effectively.
+
+Despite its advantages, nvblox has certain drawbacks that make it challenging to deploy on resource-constrained platforms. In my experiments (see Section~\ref{experiments_nvblox}), I tested nvblox on my laptop with a GTX 1660 Ti GPU but found its performance to be inadequate due to the high computational demands. To run nvblox on the robot it should have a Jetson with 8 GB of VRAM but it only has a Raspberry Pi 4. While nvblox remains a promising tool for high-performance systems, these limitations restrict its use on platforms with limited computational resources.
 
 \section{Neural reconstruction}
 
-One of the various methods for neural reconstruction is Gaussian splatting~\cite{3DGS}. It is a rendering technique that offers a unique approach to representing and visualizing three-dimensional scenes. Instead of relying on traditional surface or line primitives to render objects, Gaussian splatting employs "splats", which are essentially two-dimensional discs with Gaussian distribution characteristics. These splats are strategically placed within the scene based on key points extracted from images. By overlapping these splats, the technique reconstructs the underlying geometry and appearance of the scene.
+One of the various methods for neural reconstruction is Gaussian splatting~\cite{3DGS}. It is a rendering technique that offers a unique approach to representing and visualizing three-dimensional scenes. Instead of relying on traditional surface or line primitives to render objects, Gaussian splatting employs 3D ellipsoids with learnt parameters, which upon projecting to the image plane, produce "splats". These are essentially two-dimensional discs with Gaussian distribution characteristics. These splats are strategically placed within the scene based on key points extracted from images. By overlapping these splats, the technique reconstructs the underlying geometry and appearance of the scene.
 
 One of the primary advantages of Gaussian splatting lies in its ability to faithfully capture the intricacies of complex scenes without requiring an explicit representation of geometry. This makes it particularly useful in scenarios where the scene's geometry is challenging to model or where the available data is sparse or noisy. By leveraging the information from multiple viewpoints, Gaussian splatting can generate detailed and coherent renderings, even from limited input data.
 
@@ -135,22 +177,8 @@ Recent advancements in the field, particularly in the realm of Neural Radiance F
 
 Gaussian splatting and NeRFs open up exciting possibilities for various applications, including virtual reality, augmented reality, computer graphics, and beyond. As research in this area continues to evolve, we can expect further innovations that push the boundaries of what is possible in three-dimensional scene reconstruction and rendering.
 
+Gaussian Splatting has an original implementation which makes it easy to use\footnote{\url{https://github.com/graphdeco-inria/gaussian-splatting}}. I experimented with it during my thesis but with my GPU's memory limitations I could not be able to use it. Instead I used Nerfstudio's splatfacto model for experimenting with Gaussian splatting and the nerfacto model for experimenting with NeRFs. Nerfstudio makes it easy to create Gaussian splats or train NeRFs due to its user friendly CLI and the viser where I could examine the progress of the training. The Reader can examine these experiments more deeply in Chapter~\ref{nerf_gsplat}.
+
 Our optional goal was to create photorealistic 3D models of the robot's environment from the images taken when mapping. This could be achieved with the help of Gaussian splatting. The result could be an environment's 3D model where we can place the robot's 3D model too and visualize its position real-time while it runs in localization mode using the discovered map.
 
-\section{RTAB-Map}
-
-RTAB-Map (Real-Time Appearance-Based Mapping~\cite{RTAB_Map_docs}) is a graph-based SLAM (Simultaneous Localization and Mapping) approach designed for long-term and large-scale mapping in real-time. It is widely used in robotics applications due to its capability to create detailed and accurate maps while efficiently managing computational resources.
-
-RTAB-Map was introduced by Labbé and Michaud in 2013 as a solution to address the challenges of real-time 3D mapping. The core concept of RTAB-Map is to utilize an appearance-based loop closure detection method, which significantly enhances the robustness and accuracy of the mapping process. This method allows the system to recognize previously visited locations, thereby correcting the trajectory and reducing cumulative errors typically associated with SLAM algorithms.
-
-One of the key features of RTAB-Map is its ability to handle large-scale environments. It achieves this by organizing the map into a graph structure where nodes represent keyframes, and edges represent spatial constraints between them. This graph structure is continuously optimized to improve the accuracy of the map and the estimated trajectory. Additionally, RTAB-Map employs a memory management strategy to keep the computational load manageable, ensuring that the system can operate in real-time even with extensive data.
-
-RTAB-Map is highly versatile and supports various sensor configurations, including RGB-D cameras, stereo cameras, and LIDAR sensors. This flexibility makes it suitable for a wide range of applications, from indoor navigation to outdoor exploration. Moreover, RTAB-Map is integrated with ROS, providing a comprehensive suite of tools for robotic development and deployment.
-
-\section{NVIDIA's nvblox}
-
-NVIDIA’s nvblox~\cite{nvblox_docs} is a GPU-accelerated spatial mapping library designed to work seamlessly with ROS2 and other robotics frameworks for real-time 3D environment reconstruction. Leveraging NVIDIA’s CUDA technology, nvblox processes data from depth sensors and LIDAR in real time, enabling robots to build and update dense 3D maps of their surroundings with low latency. Its main use cases include robotics applications requiring immediate spatial awareness, such as autonomous navigation, manipulation, and exploration in dynamically changing environments.
-
-One of the key advantages of nvblox is its ability to generate high-resolution voxel grids and mesh representations at impressive speeds, a performance largely unattainable with CPU-only mapping solutions. nvblox achieves this by maintaining and updating a voxel grid map where each voxel represents a small cube in the 3D environment, storing spatial information like occupancy and color. It also incorporates functionality to convert voxel maps into triangular meshes, which can then be visualized or further processed. With its ROS2 compatibility, nvblox can work as a ROS node, allowing direct integration with popular robotic systems and sensor data sources like RGB-D cameras, stereo cameras, and LIDAR, making it a practical solution for ROS-based projects.
-
-Another significant feature of nvblox is its flexibility to run on various NVIDIA platforms, including Jetson devices, which are popular in edge computing and mobile robotics. This makes nvblox ideal for field applications where high-performance spatial understanding is critical. By reducing the computational load traditionally associated with real-time 3D mapping and enhancing efficiency, nvblox enables the creation of robust, high-fidelity maps that allow robots to react to and understand their environments effectively.
+To create a reconstructed map a dataset needs to be prepared for Nerfstudio. Images taken at keyframes are needed from the environment, then we need to estimate poses for these images with a photogrammetry software (like COLMAP), or the poses can be taken from SLAM directly (it is a more precise approach). In this thesis I will compare these approaches later on the evaluation in Chapter~\ref{evaluation}. Alongside with the images and poses a point cloud is also needed for the training, which can, again, be extracted from the SLAM process or can be estimated by a photogrammetry software. With the images, poses and point cloud the dataset is made and can be used by Nerfstudio for training. The training algorithm adjusts the NeRF's weights/Gaussian splatting parameters making the model to represent the input scene precisely. At the end, a scene can be rendered from the trained NeRF or a splat can be exported from the Gaussians.

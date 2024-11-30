@@ -1,15 +1,13 @@
 \chapter{Experiments in RGBD sensing using DepthAI} \label{experiments_oak_d}
 
-\section{Overview}
-
-In this chapter we explore the capabilities of the OAK-D camera using the DepthAI Viewer software to understand its functionalities. This exploration provided insights into the camera's real-time 3D reconstruction and its Vision Processing Unit (VPU) capabilities. Subsequently, we experimented with the Spectacular AI SDK to further test the camera's performance, especially in mapping and person detection scenarios.
+In this chapter I present the capabilities of the OAK-D camera using the DepthAI Viewer software and the Spectacular AI SDK to understand its functionalities. This exploration provided insights into the camera's real-time 3D reconstruction and its Vision Processing Unit's (VPU) capabilities. Subsequently, I experimented with the Spectacular AI SDK to further test the camera's performance, especially in mapping and person detection scenarios.
 
 
 \section{DepthAI Viewer}
 
 To begin exploring the capabilities of the camera, I initiated my efforts by testing the example software provided by the camera's manufacturer, namely DepthAI Viewer\footnote{\url{https://github.com/luxonis/depthai-viewer}}. This software proved invaluable for its ability to showcase the camera's functionalities effectively.
 
-Upon installation, I gained access to a user-friendly interface that allowed me to view images captured by the camera in real time. Additionally, the software facilitated real-time 3D reconstruction of the camera's surroundings, as depicted in Figure~\ref{fig:DAI_3d}. Notably, the DepthAI Viewer leveraged the Vision Processing Unit (VPU) embedded within the device, thereby enabling comprehensive exploration of its capabilities, as illustrated in the top left corner of Figure~\ref{fig:DAI_person_detection}.
+Upon installation, I gained access to a user-friendly interface that allowed me to view images captured by the camera in real time. Additionally, the software facilitated real-time 3D reconstruction of the camera's surroundings, as depicted in Figure~\ref{fig:DAI_3d}. Notably, the DepthAI Viewer leveraged the VPU embedded within the device, thereby enabling comprehensive exploration of its capabilities, as illustrated in the top left corner of Figure~\ref{fig:DAI_person_detection}.
 
 \FloatBarrier
 \begin{figure}[htbp]
@@ -43,7 +41,7 @@ SpectacularAI WARN: VIO may be running too slow, data is being input too fast, o
 
 After research, I discovered that these issues were due to outdated firmware on the camera, an issue that was challenging to identify due to sparse documentation. To resolve this, I cloned Luxonis' \verb|depthai-python| repository\footnote{\url{https://github.com/luxonis/depthai-python}} and ran the IMU firmware update script\footnote{\url{https://github.com/luxonis/depthai-python/blob/main/examples/IMU/imu_firmware_update.py}}. Following the successful firmware update, I was able to run the examples without issues.
 
-The simplest example visualized the camera’s movement by extracting IMU data and plotting it using matplotlib. As shown in Figure~\ref{fig:IMU_visu}, I was able to "draw" a heart in the air. The curves are slightly uneven due to minor hand movements.
+The simplest example visualized the camera’s movement by extracting IMU data and plotting it using matplotlib. As shown in Figure~\ref{fig:IMU_visu}, I was able to "draw" a heart in the air. To achieve this, I held the camera in my hand, started the example script which integrated the IMU acceleration data over time, thus creating a trajectory, and tried to move the camera in my hand to form a heart. The curves are slightly uneven due to minor hand movements.
 
 \begin{figure}[htbp]
 	\centering
@@ -57,7 +55,7 @@ A more advanced example uses both the camera and the IMU. The device only visual
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=150mm, keepaspectratio]{figures_jpg/3d_pen.jpg}
-	\caption{IMU visualization with Spectacular AI}
+	\caption{IMU visualization and RGB image with Spectacular AI}
 	\label{fig:3d_pen}
 \end{figure}
 
@@ -79,12 +77,14 @@ def getContext( context = None ):
 \end{lstlisting}
 \FloatBarrier
 
-This adjustment allowed me to run various mapping examples, including point cloud mapping (Figure~\ref{fig:SPAI_mapping}), real-time AR mapping with mesh (Figure~\ref{fig:SPAI_mesh_mapping}), real-time AR mapping with point cloud (Figure~\ref{fig:SPAI_point_cloud_mapping}), and ROS2-integrated mapping (Figure~\ref{fig:SPAI_ros_mapping}).
+This adjustment allowed me to run various mapping examples. Mapping means the SDK gets images, depth maps, and poses for each frame from the camera. From the camera poses, the SDK backprojects the RGB colors into 3D with the depth map values as distance, generating a per-frame point cloud. The SDK integrating these point clouds over multiple frames gave me a dense point cloud of the scene. The SDK also fits a triangle mesh onto the point cloud for surface reconstruction and it can be used for example for collision detection.
+
+The mapping examples allowed me to try out point cloud mapping (Figure~\ref{fig:SPAI_mapping}), real-time mapping with mesh (Figure~\ref{fig:SPAI_mesh_mapping}), real-time mapping with sparse feature points (Figure~\ref{fig:SPAI_point_cloud_mapping}). The poses and point clouds can be also published into ROS2 (Figure~\ref{fig:SPAI_ros_mapping}).
 
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=150mm, keepaspectratio]{figures_jpg/spectacular_ai_mapping_visu.jpg}
-	\caption{Mapping with Spectacular AI}
+	\caption{Point cloud mapping with Spectacular AI}
 	\label{fig:SPAI_mapping}
 \end{figure}
 
@@ -92,7 +92,7 @@ This adjustment allowed me to run various mapping examples, including point clou
 	\centering
 	\includegraphics[width=67mm, keepaspectratio]{figures_jpg/spectacular_ai_mapping_ar_mesh1.jpg}\hspace{1cm}
 	\includegraphics[width=67mm, keepaspectratio]{figures_jpg/spectacular_ai_mapping_ar_mesh2.jpg}\\\vspace{5mm}
-	\caption{AR mesh mapping with Spectacular AI}
+	\caption{Mesh mapping with Spectacular AI}
     \label{fig:SPAI_mesh_mapping}
 \end{figure}
 
@@ -100,7 +100,7 @@ This adjustment allowed me to run various mapping examples, including point clou
 	\centering
 	\includegraphics[width=67mm, keepaspectratio]{figures_jpg/spectacular_ai_mapping_ar_pc1.jpg}\hspace{1cm}
 	\includegraphics[width=67mm, keepaspectratio]{figures_jpg/spectacular_ai_mapping_ar_pc2.jpg}\\\vspace{5mm}
-	\caption{AR point cloud mapping with Spectacular AI}
+	\caption{Sparse point cloud mapping with Spectacular AI}
     \label{fig:SPAI_point_cloud_mapping}
 \end{figure}
 
@@ -123,13 +123,13 @@ The final example I explored highlights one of the most impressive capabilities 
 \end{figure}
 
 
-\section{Experimenting with a Custom Person Detector}
+\section{Experimenting with a custom person detector}
 
-One of our objectives was to detect people using the robot's camera and enable the robot to follow or avoid them while mapping. We initially tested Spectacular AI’s example detection model on the robot’s camera, but quickly realized that its default placement restricted the field of view (FOV). Due to the platform above the robot, the camera’s FOV was so limited that, at a distance of 2–3 meters, only a person’s legs were visible, which rendered the detection ineffective.
+One of my objectives was to detect people using the robot's camera and enable the robot to follow or avoid them while mapping. I initially tested Spectacular AI’s example detection model on the robot’s camera, but quickly realized that its default placement restricted the field of view (FOV). Due to the platform above the robot, the camera’s FOV was so limited that, at a distance of 2–3 meters, only a person’s legs were visible, which rendered the detection ineffective.
 
 To resolve this, we repositioned the camera at the front edge of the platform, temporarily mounting it with plasticine, which significantly improved the FOV. This adjustment allowed clearer detection, as shown in Figure \ref{fig:person_detection_camera_at_front_nokia}, where my advisor is detected (the other detected individual is a person on a poster).
 
-After adjusting the FOV and testing the example detection script, I developed a custom script based on the example, designed to detect people and publish their locations in world coordinates on a ROS topic (code available in Appendix \ref{custom_person_detector}). However, both the base example and my custom person detector frequently froze after several detections, with an error related to the IMU buffer size. This issue occurred because the IMU data rate was too high, and the \verb|SpatialLocationCalculator| node’s buffer size was inadequate and inflexible. This buffer could not be extended or flushed due to its fixed nature within the node.
+After adjusting the FOV and testing the example detection script, I developed a custom script based on the example, designed to detect people and publish their locations in world coordinates on a ROS topic (the code is available for inspection in Appendix \ref{custom_person_detector}). However, both the base example and my custom person detector frequently froze after several detections, with an error related to the IMU buffer size. This issue occurred because the IMU data rate was too high, and the \verb|SpatialLocationCalculator| node’s buffer size was inadequate and inflexible. This buffer could not be extended or flushed due to its fixed nature within the node.
 
 In conclusion, while the repositioned camera improved FOV, the camera's current limitations in buffer handling prevented us from implementing a stable person detection system.
 
